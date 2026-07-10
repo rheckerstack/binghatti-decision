@@ -1036,14 +1036,55 @@ function clearFilters(silent){
 function copyWA(e,selOnly){
   var rows=getExportData(selOnly);
   if(!rows.length){alert('No results.');return;}
-  var subset=rows.slice(0,50);
-  var txt='🏢 *Available Units — '+new Date().toLocaleDateString('en-GB')+'*\n_'+rows.length.toLocaleString()+' units'+(rows.length>50?' · showing 50':'')+'_\n';
+  var date=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  var primaryAreaLabel=(window._areaLabels&&window._areaLabels.length)?window._areaLabels[0]:'Built Up';
+
+  var prices=rows.map(function(r){return r.price;}).filter(Boolean);
+  var minP=prices.length?Math.min.apply(null,prices):0;
+  var projects=Array.from(new Set(rows.map(function(r){return r.project;}))).filter(Boolean);
+  var projStr=projects.length===1?projects[0]:projects.length+' Projects';
+
+  // Group by unit type, sorted Studio → 1BR → 2BR → 3BR → 4BR → 5BR → Other
+  var bedOrder=['Studio','1 Bedroom','2 Bedroom','3 Bedroom','4 Bedroom','5 Bedroom'];
+  var grouped={},groupOrder=[];
+  rows.forEach(function(r){
+    var k=r.unit_type||r.bedrooms||'Other';
+    if(!grouped[k]){grouped[k]=[];groupOrder.push(k);}
+    grouped[k].push(r);
+  });
+  groupOrder.sort(function(a,b){
+    var ai=bedOrder.indexOf(a),bi=bedOrder.indexOf(b);
+    return (ai<0?99:ai)-(bi<0?99:bi);
+  });
+
+  var txt='🏢 *'+projStr+'*\n';
+  txt+='_'+date+' · '+rows.length.toLocaleString()+' units · from AED '+fp(minP)+'_\n';
   if(smLine())txt+='\n📋 '+smLine()+'\n';
   txt+='\n';
-  subset.forEach(function(r){
-    txt+='• *'+(r.project||'–')+'* | '+(r.bedrooms||'–')+' | '+(r.view||'N/A')+'\n';
-    txt+='  Floor '+(r.floor!=null?r.floor:'–')+(r.chargeable_area?' | '+Math.round(r.chargeable_area).toLocaleString()+' sqft':'')+' | AED '+fp(r.price)+(r.psf?' ('+r.psf.toLocaleString()+'/sqft)':'')+'\n\n';
+
+  var totalShown=0,limit=60;
+  groupOrder.forEach(function(k){
+    if(totalShown>=limit)return;
+    var grp=grouped[k];
+    var grpPrices=grp.map(function(r){return r.price;}).filter(Boolean);
+    var grpMin=grpPrices.length?Math.min.apply(null,grpPrices):0;
+    txt+='*'+k+' — '+grp.length+' units'+(grpMin?' · from AED '+fp(grpMin):'')+':*\n';
+    var canShow=Math.min(grp.length,limit-totalShown);
+    grp.slice(0,canShow).forEach(function(r){
+      var areaVal=(r.areas&&r.areas[primaryAreaLabel])?Math.round(r.areas[primaryAreaLabel]).toLocaleString():(r.chargeable_area?Math.round(r.chargeable_area).toLocaleString():'');
+      txt+='• '+(r.unit||'–')+' | Fl.'+(r.floor!=null?r.floor:'–');
+      if(areaVal)txt+=' | '+areaVal+' sqft';
+      txt+=' | AED '+fp(r.price);
+      if(r.psf)txt+=' ('+r.psf.toLocaleString()+'/sqft)';
+      if(r.view)txt+='\n  📍 '+r.view;
+      txt+='\n';
+    });
+    totalShown+=canShow;
+    if(grp.length>canShow)txt+='  _…+'+(grp.length-canShow)+' more_\n';
+    txt+='\n';
   });
+  if(rows.length>limit)txt+='_Showing '+limit+' of '+rows.length.toLocaleString()+' — filter to narrow results_\n';
+
   var btn=e.currentTarget,orig=btn.innerHTML;
   if(navigator.clipboard&&navigator.clipboard.writeText){
     navigator.clipboard.writeText(txt).then(function(){flashBtn(btn,orig,'✓ Copied!');});
