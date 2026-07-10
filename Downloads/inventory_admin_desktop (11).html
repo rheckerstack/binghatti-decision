@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMRE · Inventory Manager</title>
+<script>(function(){var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.async=false;document.head.appendChild(s);})();</script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#D4A853;--gold-light:#F0D898;--gold-dark:#A07830;
+  --bg:#0A0A0A;--surface:#161616;--surface2:#202020;--surface3:#2A2A2A;
+  --border:#303030;--border2:#424242;
+  --text:#F8F4EE;--text2:#D4CCC2;--text3:#8A8078;
+  --green:#5DC98A;--red:#E07070;--blue:#64A8D4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:400;min-height:100vh;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* ── HEADER ── */
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:54px;flex-shrink:0}
+.logo{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;letter-spacing:.06em;color:var(--gold)}
+.logo em{font-style:normal;color:var(--text3);font-size:11px;font-family:'DM Sans',sans-serif;font-weight:400;letter-spacing:.15em;margin-left:8px;text-transform:uppercase}
+.hdr-right{display:flex;align-items:center;gap:12px}
+.hdr-badge{display:none;align-items:center;gap:7px;font-size:12px;color:var(--green);font-weight:500}
+.hdr-badge.on{display:flex}
+.dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hdr-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .15s}
+.hdr-btn:hover{border-color:var(--gold-dark);color:var(--gold)}
+.hdr-btn svg{width:13px;height:13px;fill:currentColor}
+.hdr-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(212,168,83,.08)}
+
+/* ── STATS BAR ── */
+.statsbar{display:flex;gap:1px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--border)}
+.stat{flex:1;background:var(--surface);padding:12px 20px;display:flex;flex-direction:column;gap:3px}
+.stat-label{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)}
+.stat-value{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--text);line-height:1}
+.stat-value.gold{color:var(--gold)}
+.stat-value.green{color:var(--green)}
+.stat-sub{font-size:11px;color:var(--text3)}
+
+/* ── TOOLBAR ── */
+.toolbar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap}
+.upload-zone{position:relative;display:flex;align-items:center;gap:10px;padding:7px 14px;border:1.5px dashed var(--border2);border-radius:7px;background:var(--surface2);cursor:pointer;transition:all .2s;overflow:hidden}
+.upload-zone:hover{border-color:var(--gold);background:rgba(212,168,83,.04)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:16px;width:100%;height:100%}
+.upload-zone svg{width:15px;height:15px;fill:var(--gold);flex-shrink:0;pointer-events:none}
+.upload-zone span{font-size:12px;color:var(--text2);pointer-events:none;white-space:nowrap}
+.tbsep{width:1px;height:28px;background:var(--border);flex-shrink:0}
+.srch-wrap{flex:1;min-width:200px;max-width:420px;position:relative;display:flex;align-items:center}
+.srch-wrap>svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;fill:var(--text3);pointer-events:none;z-index:1;flex-shrink:0}
+.tag-input-wrap{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:4px 8px 4px 32px;min-height:34px;display:flex;flex-wrap:wrap;align-items:center;gap:4px;cursor:text;transition:border .15s}
+.tag-input-wrap:focus-within{border-color:var(--gold-dark)}
+.tags-row{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.stag{display:inline-flex;align-items:center;gap:4px;background:var(--gold-dark);border:1px solid var(--gold);color:var(--gold-light);border-radius:4px;padding:2px 7px;font-size:11px;font-weight:500;white-space:nowrap}
+.stag-x{cursor:pointer;opacity:.7;font-size:13px;line-height:1;padding:0 1px}
+.stag-x:hover{opacity:1}
+.tag-input{background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;min-width:120px;flex:1;padding:2px 0}
+.tag-input::placeholder{color:var(--text3)}
+.sortsel{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;cursor:pointer}
+.tbactions{display:flex;gap:7px;margin-left:auto}
+.tbtn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.tbtn:hover{border-color:var(--gold-dark);color:var(--gold);background:rgba(212,168,83,.06)}
+.tbtn svg{width:13px;height:13px;fill:currentColor;flex-shrink:0}
+.tbtn.pdf{border-color:#6A2FA0;color:#C49AE8}
+.tbtn.pdf:hover{background:rgba(196,154,232,.08)}
+.tbtn.wa{border-color:#2E7D52;color:#5DC98A}
+.tbtn.wa:hover{background:rgba(93,201,138,.08)}
+.tbtn.primary{border-color:var(--gold);color:var(--gold);background:rgba(212,168,83,.06)}
+.tbtn.primary:hover{background:rgba(212,168,83,.14)}
+
+/* ── MAIN LAYOUT ── */
+.body{display:flex;flex:1;overflow:hidden}
+
+/* ── FILTER PANEL ── */
+.filters{width:240px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:0}
+.filters-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.filters-hdr span{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--text3)}
+.clr-btn{font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px 0;font-family:'DM Sans',sans-serif}
+.clr-btn:hover{color:var(--red)}
+.fgrp{margin-bottom:16px}
+.flabel{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:7px;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{padding:4px 10px;border-radius:20px;border:1px solid var(--border2);font-size:11px;color:var(--text2);cursor:pointer;transition:all .12s;user-select:none;background:var(--surface2);white-space:nowrap}
+.chip:hover{border-color:var(--gold-dark);color:var(--gold-light)}
+.chip.on{background:var(--gold-dark);border-color:var(--gold);color:var(--gold-light)}
+.rinputs{display:flex;gap:5px}
+.rinput{background:var(--surface2);border:1px solid var(--border2);border-radius:5px;padding:6px 8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;width:100%;transition:border .15s}
+.rinput:focus{border-color:var(--gold-dark)}
+.rinput::placeholder{color:var(--text3);font-size:11px}
+.tower-badge{font-size:9px;color:var(--gold);letter-spacing:.08em;text-transform:uppercase}
+
+/* ── TABLE AREA ── */
+.tarea{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.tcount{padding:8px 18px;font-size:12px;color:var(--text3);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tcount strong{color:var(--gold);font-weight:600}
+.twrap{flex:1;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead{position:sticky;top:0;z-index:10}
+thead th{background:var(--surface2);padding:9px 12px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+thead th:hover{color:var(--text2)}
+thead th.sorted-asc::after{content:' ↑';color:var(--gold)}
+thead th.sorted-desc::after{content:' ↓';color:var(--gold)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .08s;cursor:pointer}
+tbody tr:hover{background:rgba(212,168,83,.04)}
+tbody tr.selected{background:rgba(212,168,83,.07)!important}
+td{padding:9px 12px;color:var(--text2);white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+td.tp{color:var(--text);font-weight:500}
+td.tu{font-family:monospace;font-size:11px;color:var(--text3)}
+td.tpr{color:var(--gold);font-weight:600}
+td.tpsf{color:var(--text3)}
+td.tb{color:var(--text);font-weight:500}
+.vpill{display:inline-block;padding:2px 7px;border-radius:3px;background:rgba(255,255,255,.04);font-size:10px;color:var(--text3);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
+
+/* ── PAGER ── */
+.pager{padding:8px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);font-size:12px;color:var(--text3);flex-shrink:0}
+.pbtns{display:flex;gap:3px}
+.pbtn{width:28px;height:28px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--text3);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.pbtn:hover{border-color:var(--gold-dark);color:var(--gold)}
+.pbtn.on{background:var(--gold-dark);border-color:var(--gold);color:var(--gold-light)}
+.pbtn:disabled{opacity:.3;cursor:not-allowed}
+
+/* ── EMPTY / LOADING ── */
+.empty,.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:10px;color:var(--text3);font-size:13px;padding:60px;text-align:center}
+.empty svg{width:36px;height:36px;fill:var(--text3);opacity:.18;margin-bottom:6px}
+.empty h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--text2);font-weight:400}
+.loading{display:none}.loading.on{display:flex}
+.spin{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── MODALS ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:center;justify-content:center;padding:20px}
+.overlay.on{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:26px;width:100%;max-height:88vh;overflow-y:auto}
+.modal h2{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--gold);margin-bottom:4px;font-weight:500}
+.modal .msub{font-size:12px;color:var(--text3);margin-bottom:18px;line-height:1.5}
+.map-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
+.mrow{display:flex;flex-direction:column;gap:4px}
+.mlbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);font-weight:500}
+.msel,.finput{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:9px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;width:100%;transition:border .15s}
+.msel{font-size:13px}.msel:focus,.finput:focus{border-color:var(--gold-dark)}
+.finput::placeholder{color:var(--text3);font-size:13px}
+.mactions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+.mbtn{padding:9px 20px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .15s}
+.mbtn.pri{background:var(--gold-dark);border:1px solid var(--gold);color:var(--gold-light)}
+.mbtn.pri:hover{background:var(--gold);color:#111}
+.mbtn.sec{background:transparent;border:1px solid var(--border2);color:var(--text3)}
+.mbtn.sec:hover{border-color:var(--red);color:var(--red)}
+.prev-wrap{overflow-x:auto;margin-bottom:16px;max-height:130px;overflow-y:auto;border-radius:6px;border:1px solid var(--border)}
+.prev-tbl{width:100%;border-collapse:collapse;font-size:11px}
+.prev-tbl th{background:var(--surface3);padding:6px 9px;text-align:left;color:var(--text3);white-space:nowrap;border-bottom:1px solid var(--border)}
+.prev-tbl td{padding:4px 9px;color:var(--text2);border-bottom:1px solid var(--border);white-space:nowrap}
+
+/* ── PROFILE MODAL ── */
+.pmodal{max-width:500px}
+.fgroup{margin-bottom:14px}
+.flbl2{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;display:block}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pcard{margin-top:16px;padding:14px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;gap:14px}
+.pavatar{width:42px;height:42px;border-radius:50%;background:var(--gold-dark);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold-light);flex-shrink:0;font-weight:600}
+.pname{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px}
+.pdetails{font-size:11px;color:var(--text3);line-height:1.6}
+
+/* ── SELECTION ── */
+.sel-bar{display:none;align-items:center;gap:12px;padding:8px 18px;background:rgba(212,168,83,.08);border-bottom:1px solid var(--gold-dark);flex-shrink:0;flex-wrap:wrap}
+.sel-bar.on{display:flex}
+.sel-count{font-size:13px;font-weight:500;color:var(--gold)}
+.sel-clear{font-size:12px;color:var(--text3);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;text-decoration:underline}
+.sel-clear:hover{color:var(--red)}
+.sel-actions{display:flex;gap:7px;margin-left:auto}
+.sel-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:5px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.sel-btn:hover{border-color:var(--gold-dark);color:var(--gold)}
+.sel-btn svg{width:12px;height:12px;fill:currentColor}
+.sel-btn.pdf{border-color:#6A2FA0;color:#C49AE8}.sel-btn.pdf:hover{background:rgba(196,154,232,.08)}
+.sel-btn.wa{border-color:#2E7D52;color:#5DC98A}.sel-btn.wa:hover{background:rgba(93,201,138,.08)}
+.chk-col{width:36px;text-align:center!important;padding:0 6px!important}
+.row-chk{width:15px;height:15px;accent-color:var(--gold);cursor:pointer}
+tbody tr.selected td{background:rgba(212,168,83,.06)}
+
+/* ── LOG ── */
+.parse-log{font-size:11px;padding:7px 12px;background:var(--surface3);border-radius:5px;border:1px solid var(--border);display:none;flex-shrink:0;margin:8px 20px 0}
+.parse-log.on{display:block}
+.ok{color:var(--green)}.warn{color:#FFB060}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="logo">SMRE<em>Inventory Manager</em></div>
+  <div class="hdr-right">
+    <div class="hdr-badge" id="ubadge"><div class="dot"></div><span id="ucount"></span></div>
+    <button class="hdr-btn active" onclick="openModal('profModal')">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      <span id="pbtnlbl">My Profile</span>
+    </button>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="statsbar" id="statsbar">
+  <div class="stat"><span class="stat-label">Total Units</span><span class="stat-value gold" id="statTotal">—</span><span class="stat-sub" id="statSub">Upload a file to begin</span></div>
+  <div class="stat"><span class="stat-label">Showing</span><span class="stat-value" id="statShowing">—</span><span class="stat-sub" id="statProjs">—</span></div>
+  <div class="stat"><span class="stat-label">Price From</span><span class="stat-value" id="statMin">—</span><span class="stat-sub">AED</span></div>
+  <div class="stat"><span class="stat-label">Price Up To</span><span class="stat-value" id="statMax">—</span><span class="stat-sub">AED</span></div>
+  <div class="stat"><span class="stat-label">Avg AED/Sqft</span><span class="stat-value green" id="statPsf">—</span><span class="stat-sub">filtered selection</span></div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="upload-zone">
+    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv,.png,.jpg,.jpeg,.webp" onchange="handleFile(event)">
+    <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+    <span id="uploadLabel">Upload Inventory (.xlsx / CSV)</span>
+  </div>
+  <div class="tbsep"></div>
+  <div class="srch-wrap">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+    <div class="tag-input-wrap" id="tagWrap">
+      <div class="tags-row" id="tagsRow"></div>
+      <input class="tag-input" id="srch" type="text" placeholder="Type + Enter or comma to add tag…" onkeydown="handleTagKey(event)" oninput="applyFilters()">
+    </div>
+  </div>
+  <select class="sortsel" id="sortsel" onchange="applyFilters()">
+    <option value="price_asc">Price ↑</option>
+    <option value="price_desc">Price ↓</option>
+    <option value="psf_asc">AED/Sqft ↑</option>
+    <option value="psf_desc">AED/Sqft ↓</option>
+    <option value="area_asc">Area ↑</option>
+    <option value="area_desc">Area ↓</option>
+    <option value="floor_asc">Floor ↑</option>
+    <option value="project_asc">Project A–Z</option>
+  </select>
+  <div class="tbsep"></div>
+  <div class="tbactions">
+    <button class="tbtn wa" onclick="copyWA(event,false)">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+      WhatsApp
+    </button>
+    <button class="tbtn pdf" onclick="exportPDF(false)">
+      <svg viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>
+      Export PDF
+    </button>
+    <button class="tbtn" onclick="exportCSV()">
+      <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+      Export CSV
+    </button>
+    <button class="tbtn primary" onclick="exportCSV('broker')">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+      Send to Broker
+    </button>
+  </div>
+</div>
+
+<div class="parse-log" id="plog"></div>
+
+<!-- SELECTION BAR -->
+<div class="sel-bar" id="selBar">
+  <span class="sel-count" id="selCount">0 selected</span>
+  <button class="sel-clear" onclick="clearSelection()">✕ Clear selection</button>
+  <div class="sel-actions">
+    <button class="sel-btn wa" onclick="copyWA(event,true)">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+      WhatsApp
+    </button>
+    <button class="sel-btn pdf" id="pdfBtn" onclick="exportPDF(true)">
+      <svg viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>
+      PDF
+    </button>
+    <button class="sel-btn" onclick="exportCSV('','selected')">
+      <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+      CSV
+    </button>
+    <button class="sel-btn" style="border-color:var(--gold);color:var(--gold)" onclick="exportCSV('broker','selected')">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+      Send to Broker
+    </button>
+  </div>
+</div>
+
+<!-- COLUMN MAPPING MODAL -->
+<div class="overlay" id="mapModal">
+  <div class="modal" style="max-width:680px">
+    <h2>Map Your Columns</h2>
+    <p class="msub">Match each field to your file's columns.</p>
+    <div id="prevSection"></div>
+    <div class="map-grid" id="mapGrid"></div>
+    <div class="mactions">
+      <button class="mbtn sec" onclick="closeModal('mapModal')">Cancel</button>
+      <button class="mbtn pri" onclick="applyMapping()">Import →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE MODAL (no PIN - this is your admin version) -->
+<div class="overlay" id="profModal">
+  <div class="modal pmodal">
+    <h2>Your Profile</h2>
+    <p class="msub">Your details appear on every PDF and CSV exported from this app.</p>
+    <div class="frow">
+      <div class="fgroup"><span class="flbl2">Your Name</span><input class="finput" id="smName" placeholder="Your name" oninput="previewProfile()"></div>
+      <div class="fgroup"><span class="flbl2">Developer / Company</span><input class="finput" id="smDev" placeholder="e.g. Sobha Realty" oninput="previewProfile()"></div>
+    </div>
+    <div class="frow">
+      <div class="fgroup"><span class="flbl2">Phone / WhatsApp</span><input class="finput" id="smPhone" placeholder="+971 50 000 0000" oninput="previewProfile()"></div>
+      <div class="fgroup"><span class="flbl2">Email</span><input class="finput" id="smEmail" placeholder="you@email.com" oninput="previewProfile()"></div>
+    </div>
+    <div class="fgroup"><span class="flbl2">BRN / License (optional)</span><input class="finput" id="smBrn" placeholder="BRN: 12345" oninput="previewProfile()"></div>
+    <div class="pcard">
+      <div class="pavatar" id="pavatar">?</div>
+      <div><div class="pname" id="pname">Your Name</div><div class="pdetails" id="pdetails">Fill in your details above</div></div>
+    </div>
+    <div class="mactions">
+      <button class="mbtn sec" onclick="closeModal('profModal')">Cancel</button>
+      <button class="mbtn pri" onclick="saveProfile()">Save Profile</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN BODY -->
+<div class="body">
+  <!-- FILTERS -->
+  <div class="filters" id="sidebar">
+    <div class="filters-hdr">
+      <span>Filters</span>
+      <button class="clr-btn" onclick="clearFilters()">✕ Clear all</button>
+    </div>
+    <div class="fgrp"><span class="flabel">Project</span><div class="chips" id="projChips"></div></div>
+    <div class="fgrp" id="towerGrp" style="display:none">
+      <span class="flabel" style="display:flex;align-items:center;justify-content:space-between">
+        <span id="towerGrpLabel">Sub-project</span>
+        <span class="tower-badge">↳</span>
+      </span>
+      <div class="chips" id="towerChips"></div>
+    </div>
+    <div class="fgrp"><span class="flabel">Bedrooms</span><div class="chips" id="bedChips"></div></div>
+    <div class="fgrp"><span class="flabel">View Keywords</span><div class="chips" id="viewChips"></div></div>
+    <div class="fgrp"><span class="flabel">Price (AED)</span>
+      <div class="rinputs"><input class="rinput" id="priceMin" type="number" placeholder="Min" oninput="applyFilters()"><input class="rinput" id="priceMax" type="number" placeholder="Max" oninput="applyFilters()"></div>
+    </div>
+    <div class="fgrp"><span class="flabel">AED / Sq.Ft</span>
+      <div class="rinputs"><input class="rinput" id="psfMin" type="number" placeholder="Min" oninput="applyFilters()"><input class="rinput" id="psfMax" type="number" placeholder="Max" oninput="applyFilters()"></div>
+    </div>
+    <div class="fgrp"><span class="flabel">Area (Sq.Ft)</span>
+      <div class="rinputs"><input class="rinput" id="areaMin" type="number" placeholder="Min" oninput="applyFilters()"><input class="rinput" id="areaMax" type="number" placeholder="Max" oninput="applyFilters()"></div>
+    </div>
+    <div class="fgrp"><span class="flabel">Floor</span>
+      <div class="rinputs"><input class="rinput" id="floorMin" type="number" placeholder="Min" oninput="applyFilters()"><input class="rinput" id="floorMax" type="number" placeholder="Max" oninput="applyFilters()"></div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="tarea">
+    <div class="tcount" id="tcount" style="display:none">
+      Showing <strong id="rcount">0</strong> units &nbsp;·&nbsp; <span id="rmeta"></span>
+    </div>
+    <div class="twrap" id="twrap">
+      <div class="empty" id="emptyEl">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15h8v2H8zm0-4h8v2H8z"/></svg>
+        <h3>Upload your daily inventory report</h3>
+        <p>Excel .xlsx, CSV, or image — any developer format</p>
+      </div>
+      <div class="loading" id="loadEl"><div class="spin"></div><span id="loadMsg">Parsing…</span></div>
+      <table id="dtable" style="display:none">
+        <thead><tr id="thead"></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="pager" id="pager" style="display:none">
+      <div id="pinfo"></div>
+      <div class="pbtns" id="pbtns"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var allData=[],filteredData=[],curPage=1,PG=150;
+var selP=new Set(),selB=new Set(),selV=new Set(),selT=new Set();
+var searchTags=[],selectedRows=new Map(); // key=unique unit key, value=row object
+var pendRows=[],pendHdrs=[];
+var profile={name:'',dev:'',phone:'',email:'',brn:''};
+var currentSortField='price',currentSortDir='asc';
+
+var VKW=['Sea','Lagoon','Park','Marina','Golf','Community','City','Downtown','Beach','Green','Canal','Garden','Amenities','Road'];
+var BORD=['Studio','1 BR','1 BR + Study','1.5 BR','2 BR','2.5 BR','3 BR','3.5 BR','4 BR','5 BR','6 BR','7 BR','Villa','Townhouse','Office','Retail'];
+var PAT={
+  project:[/project.?name/i,/development.?name/i,/community.?name/i,/project/i,/development/i],
+  tower:[/tower.?name/i,/tower/i,/building/i,/block/i,/cluster/i],
+  unit:[/unit.?code/i,/unit.?(name|no\.?|num|id)/i,/apt\.?.?(name|no)/i,/^unit$/i,/apartment/i],
+  floor:[/floor.?no/i,/floor/i,/level/i,/storey/i],
+  bedrooms:[/no\.?.?of.?bed/i,/num.?bed/i,/bedroom/i,/^beds$/i,/config/i],
+  unit_type:[/unit.?type\b/i,/property.?type/i,/^type$/i],
+  area:[/chargeable.?area/i,/total.?area/i,/built.?up/i,/\bbua\b/i,/sq\.?ft.*area/i,/area.*sq/i,/size.*sq/i,/sq\.?ft/i,/\barea\b/i,/size/i],
+  area_net:[/net.?area/i,/unit.?area/i],
+  area_terrace:[/terrace.?area/i,/balcony.?area/i,/\bterrace\b/i,/\bbalcony\b/i],
+  price_full:[/100%?\s*full\s*cash/i,/^full\s*cash$/i,/^full\s*payment$/i,/100%?.?(full)?.?payment/i,/^cash$/i],
+  price:[/purchase.?price/i,/asking.?price/i,/actual.?price/i,/sale.?price/i,/total.?price/i,/list.?price/i,/^price$/i,/^value$/i,/\bprice\b/i,/value/i],
+  view:[/\bview\b/i,/\bfacing\b/i,/aspect/i]
+};
+
+function init(){
+  buildVKW();
+  try{var s=localStorage.getItem('smprofile');if(s){profile=JSON.parse(s);updateProfileBtn();}}catch(e){}
+  var z=document.querySelector('.upload-zone');
+  if(z){
+    z.addEventListener('dragover',function(e){e.preventDefault();z.style.borderColor='var(--gold)';});
+    z.addEventListener('dragleave',function(){z.style.borderColor='';});
+    z.addEventListener('drop',function(e){e.preventDefault();z.style.borderColor='';if(e.dataTransfer.files[0])processFile(e.dataTransfer.files[0]);});
+  }
+}
+
+function buildVKW(){
+  var c=document.getElementById('viewChips');
+  VKW.forEach(function(kw){var ch=mkChip(kw,function(){toggle(selV,kw,ch);});c.appendChild(ch);});
+}
+function mkChip(label,fn){
+  var d=document.createElement('div');d.className='chip';d.textContent=label;
+  d.addEventListener('click',fn);return d;
+}
+
+// ── PROFILE ───────────────────────────────────────────────
+function previewProfile(){
+  var n=document.getElementById('smName').value.trim();
+  var d=document.getElementById('smDev').value.trim();
+  document.getElementById('pavatar').textContent=n?n.charAt(0).toUpperCase():'?';
+  document.getElementById('pname').textContent=n||(d||'Your Name');
+  var det=[d,document.getElementById('smPhone').value.trim(),document.getElementById('smEmail').value.trim(),document.getElementById('smBrn').value.trim()].filter(Boolean).join(' · ');
+  document.getElementById('pdetails').textContent=det||'Fill in your details above';
+}
+function saveProfile(){
+  profile={name:document.getElementById('smName').value.trim(),dev:document.getElementById('smDev').value.trim(),phone:document.getElementById('smPhone').value.trim(),email:document.getElementById('smEmail').value.trim(),brn:document.getElementById('smBrn').value.trim()};
+  try{localStorage.setItem('smprofile',JSON.stringify(profile));}catch(e){}
+  updateProfileBtn();closeModal('profModal');
+}
+function updateProfileBtn(){
+  var has=profile.name||profile.dev;
+  document.getElementById('pbtnlbl').textContent=has?(profile.name||profile.dev):'My Profile';
+}
+function openProfileModal(){
+  document.getElementById('smName').value=profile.name||'';
+  document.getElementById('smDev').value=profile.dev||'';
+  document.getElementById('smPhone').value=profile.phone||'';
+  document.getElementById('smEmail').value=profile.email||'';
+  document.getElementById('smBrn').value=profile.brn||'';
+  previewProfile();openModal('profModal');
+}
+function smLine(){return[profile.name,profile.dev,profile.phone,profile.email,profile.brn].filter(Boolean).join(' | ');}
+
+// ── FILE ──────────────────────────────────────────────────
+function handleFile(e){var f=e.target.files[0];if(f)processFile(f);e.target.value='';}
+function processFile(file){
+  var ext=file.name.split('.').pop().toLowerCase();
+  document.getElementById('uploadLabel').textContent='Reading: '+file.name+'…';
+  showLoad('Parsing file…');setLog('');
+  if(ext==='xlsx'||ext==='xls')parseExcel(file);
+  else if(ext==='csv')parseCSV(file);
+  else if(/^(png|jpg|jpeg|webp|gif|bmp)$/.test(ext))parseImage(file);
+  else{hideLoad();alert('Use Excel (.xlsx), CSV, or an image.');}
+}
+
+function parseExcel(file){
+  if(typeof XLSX==='undefined'){
+    setTimeout(function(){parseExcel(file);},300);return;
+  }
+  var opts={cellDates:true,cellNF:false,sheetStubs:false,WTF:false};
+  var r1=new FileReader();
+  r1.onload=function(e){
+    var wb=null;
+    try{wb=XLSX.read(new Uint8Array(e.target.result),Object.assign({type:'array'},opts));}catch(err){}
+    if(wb){processWorkbook(wb);return;}
+    var r2=new FileReader();
+    r2.onload=function(e2){
+      var wb2=null;
+      try{wb2=XLSX.read(e2.target.result,Object.assign({type:'binary'},opts));}catch(err){}
+      if(wb2){processWorkbook(wb2);return;}
+      var r3=new FileReader();
+      r3.onload=function(e3){
+        var wb3=null;
+        try{wb3=XLSX.read(btoa(e3.target.result),Object.assign({type:'base64'},opts));}catch(err){}
+        if(wb3){processWorkbook(wb3);return;}
+        hideLoad();setLog('✗ Could not read this file. Try saving as CSV from Excel: File → Save As → CSV UTF-8','warn');
+      };r3.readAsBinaryString(file);
+    };r2.readAsBinaryString(file);
+  };r1.readAsArrayBuffer(file);
+}
+
+function processWorkbook(wb){
+  try{
+    var sheetNames=wb.SheetNames;
+    // MULTI-SHEET MODE: more than 1 sheet AND not just one populated sheet
+    // → treat each sheet as its own project, auto-map each independently
+    if(sheetNames.length>1){
+      var allRows=[],sheetsUsed=0,sheetsSkipped=[];
+      window._areaLabels=[];
+      sheetNames.forEach(function(sn){
+        var rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:null,raw:false});
+        rows=rows.filter(function(r){return r&&r.some(function(c){return c!==null&&c!==undefined&&String(c).trim()!=='';});});
+        if(rows.length<2){sheetsSkipped.push(sn);return;}
+        var best=findHeaderRow(rows);
+        var hdrs=rows[best].map(function(h){return h?String(h).trim():'';});
+        var dataRows=rows.slice(best+1);
+        var map=autoMapHeaders(hdrs);
+        if(Object.keys(map).length<3){sheetsSkipped.push(sn);return;}
+        // Find ALL area-like columns verbatim from this sheet's headers
+        var AREA_PAT=/area|sqft|sq\.ft|built.?up|plot|terrace|balcony|net|chargeable|bua/i;
+        var NON_AREA=/price|payment|cash|value|dp\b|\d+%/i;
+        var sheetAreaCols=[];// {idx, label}
+        hdrs.forEach(function(h,i){
+          if(!h)return;
+          var usedByOther=Object.values(map).indexOf(i)!==-1&&
+            !['area','area_net','area_terrace'].includes(Object.keys(map).find(function(k){return map[k]===i;})||'');
+          if(AREA_PAT.test(h)&&!NON_AREA.test(h)){
+            sheetAreaCols.push({idx:i,label:h});
+            if(window._areaLabels.indexOf(h)===-1)window._areaLabels.push(h);
+          }
+        });
+        var beforeCount=allRows.length;
+        dataRows.forEach(function(row){
+          if(!row||!row.length)return;
+          var g=function(f){var i=map[f];if(i===undefined||i===null)return null;var v=row[i];return(v!==null&&v!==undefined)?String(v).trim():null;};
+          var price=null;
+          ['price_full','price'].some(function(pf){var v=pn(g(pf));if(v&&v>0){price=v;return true;}return false;});
+          if(!price||price<=0)return;
+          var bedroomsVal=g('bedrooms');
+          var unitTypeVal=g('unit_type')||'';
+          var bedrooms=bedroomsVal?normB(bedroomsVal):normB(unitTypeVal);
+          // Store all area values dynamically keyed by their original label
+          var areas={};
+          sheetAreaCols.forEach(function(ac){
+            var v=row[ac.idx];
+            var n=pn(v!=null?String(v):null);
+            if(n&&n>0)areas[ac.label]=n;
+          });
+          // Primary area for PSF = first area column value
+          var primaryArea=sheetAreaCols.length?areas[sheetAreaCols[0].label]:null;
+          allRows.push({
+            project:sn,
+            tower:g('tower')||'',
+            unit:g('unit')||'',
+            floor:pn(g('floor')),
+            bedrooms:bedrooms,
+            unit_type:unitTypeVal,
+            chargeable_area:primaryArea,
+            areas:areas,// all area cols with original labels
+            price:price,
+            view:g('view')||'',
+            psf:(primaryArea&&price)?Math.round(price/primaryArea):null
+          });
+        });
+        if(allRows.length>beforeCount)sheetsUsed++;
+      });
+      hideLoad();
+      if(!allRows.length){
+        setLog('✗ Could not read any sheet automatically. Falling back to manual mapping on first sheet.','warn');
+        var rows0=XLSX.utils.sheet_to_json(wb.Sheets[sheetNames[0]],{header:1,defval:null,raw:false});
+        rows0=rows0.filter(function(r){return r&&r.some(function(c){return c!==null&&c!==undefined&&String(c).trim()!=='';});});
+        var best0=findHeaderRow(rows0);
+        var hdrs0=rows0[best0].map(function(h){return h?String(h).trim():'';});
+        showMapModal(hdrs0,rows0.slice(best0+1),{});
+        return;
+      }
+      allData=allRows;
+      finishImport(sheetsUsed+' of '+sheetNames.length+' sheets',sheetsSkipped);
+      return;
+    }
+    // SINGLE-SHEET MODE: original behavior
+    var rows=XLSX.utils.sheet_to_json(wb.Sheets[sheetNames[0]],{header:1,defval:null,raw:false});
+    rows=rows.filter(function(r){return r&&r.some(function(c){return c!==null&&c!==undefined&&String(c).trim()!=='';});});
+    var best=findHeaderRow(rows);
+    var hdrs=rows[best].map(function(h){return h?String(h).trim():'';});
+    setLog('✓ Headers on row '+(best+1)+': '+hdrs.filter(Boolean).slice(0,10).join(', ')+(hdrs.filter(Boolean).length>10?'…':''),'ok');
+    tryAutoMap(hdrs,rows.slice(best+1));
+  }catch(err){hideLoad();setLog('✗ '+err.message,'warn');}
+}
+
+function autoMapHeaders(hdrs){
+  var map={},used=new Set();
+  Object.keys(PAT).forEach(function(field){
+    var pats=PAT[field],bi=-1,bp=pats.length;
+    hdrs.forEach(function(h,i){
+      if(used.has(i))return;
+      var hn=String(h||'');
+      for(var p=0;p<pats.length;p++){if(pats[p].test(hn)&&p<bp){bi=i;bp=p;break;}}
+    });
+    if(bi!==-1){map[field]=bi;used.add(bi);}
+  });
+  return map;
+}
+
+function finishImport(sheetSummary,sheetsSkipped){
+  if(!allData.length){setLog('✗ No valid units found across sheets.','warn');return;}
+  document.getElementById('ubadge').classList.add('on');
+  document.getElementById('ubadge').classList.add('on');
+  document.getElementById('ucount').textContent=allData.length.toLocaleString()+' units';
+  document.getElementById('uploadLabel').textContent=allData.length.toLocaleString()+' units loaded · Upload new file to refresh';
+  document.getElementById('statTotal').textContent=allData.length.toLocaleString();
+  document.getElementById('statSub').textContent=sheetSummary+' loaded · '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  var msg='✓ '+allData.length.toLocaleString()+' units imported from '+sheetSummary+'.';
+  if(sheetsSkipped&&sheetsSkipped.length)msg+=' Skipped (empty/no data): '+sheetsSkipped.join(', ');
+  setLog(msg,'ok');
+  clearFilters(true);selectedRows=new Map();buildChips();buildTowerChips();applyFilters();
+  document.getElementById('dtable').style.display='table';
+  document.getElementById('emptyEl').style.display='none';
+  document.getElementById('tcount').style.display='flex';
+}
+
+function parseCSV(file){
+  var r=new FileReader();
+  r.onload=function(e){
+    var text=e.target.result;
+    var delim=text.indexOf(';')>text.indexOf(',')&&text.indexOf(';')!==-1?';':',';
+    var lines=text.split('\n').map(function(l){return l.split(delim).map(function(c){return c.replace(/^"|"$/g,'').trim();});});
+    var best=findHeaderRow(lines);
+    setLog('✓ CSV: '+lines.length+' rows.','ok');
+    tryAutoMap(lines[best],lines.slice(best+1));
+  };r.readAsText(file);
+}
+
+function parseImage(file){
+  showLoad('Reading with AI…');
+  var r=new FileReader();
+  r.onload=function(e){
+    var b64=e.target.result.split(',')[1],mt=file.type||'image/jpeg';
+    fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:mt,data:b64}},
+        {type:'text',text:'Extract all tabular data. Return ONLY valid JSON:\n{"headers":["col1",...],"rows":[["v1",...],...]}\nNumbers without commas.'}
+      ]}]})
+    }).then(function(res){return res.json();}).then(function(data){
+      if(data.error){hideLoad();setLog('✗ '+data.error.message,'warn');return;}
+      var txt=(data.content.find(function(c){return c.type==='text';})||{}).text||'';
+      var m=txt.match(/\{[\s\S]*\}/);
+      if(!m){hideLoad();setLog('✗ Could not read image.','warn');return;}
+      var p=JSON.parse(m[0]);
+      setLog('✓ AI extracted '+(p.rows&&p.rows.length||0)+' rows.','ok');
+      tryAutoMap(p.headers||[],p.rows||[]);
+    }).catch(function(err){hideLoad();setLog('✗ '+err.message,'warn');});
+  };r.readAsDataURL(file);
+}
+
+function findHeaderRow(rows){
+  var best=0,score=0;
+  for(var i=0;i<Math.min(rows.length,50);i++){
+    var r=rows[i];if(!r)continue;
+    var s=0;r.forEach(function(c){if(c!==null&&c!==undefined&&String(c).trim()&&isNaN(Number(String(c).replace(/,/g,''))))s++;});
+    if(s>score){score=s;best=i;}
+  }
+  return best;
+}
+
+// ── MAPPING ──────────────────────────────────────────────
+function tryAutoMap(hdrs,dataRows){
+  var map={},used=new Set();
+  Object.keys(PAT).forEach(function(field){
+    var pats=PAT[field],bi=-1,bp=pats.length;
+    hdrs.forEach(function(h,i){
+      if(used.has(i))return;
+      var hn=String(h||'');
+      for(var p=0;p<pats.length;p++){if(pats[p].test(hn)&&p<bp){bi=i;bp=p;break;}}
+    });
+    if(bi!==-1){map[field]=bi;used.add(bi);}
+  });
+  var hasMoney=map.price!==undefined||map.area!==undefined;
+  if(Object.keys(map).length>=4&&hasMoney){
+    setLog('✓ Auto-mapped: '+Object.keys(map).map(function(k){return k+'→"'+hdrs[map[k]]+'"';}).join(', '),'ok');
+    importData(hdrs,dataRows,map);
+  }else{
+    hideLoad();setLog('⚠ '+Object.keys(map).length+' columns detected — verify below.','warn');
+    showMapModal(hdrs,dataRows,map);
+  }
+}
+
+function showMapModal(hdrs,dataRows,autoMap){
+  pendRows=dataRows;pendHdrs=hdrs;autoMap=autoMap||{};
+  var prev=dataRows.slice(0,4);
+  var html='<div class="prev-wrap"><table class="prev-tbl"><thead><tr>'+hdrs.map(function(h){return'<th>'+(h||'?')+'</th>';}).join('')+'</tr></thead><tbody>';
+  prev.forEach(function(r){html+='<tr>'+hdrs.map(function(_,i){return'<td>'+(r[i]||'')+'</td>';}).join('')+'</tr>';});
+  html+='</tbody></table></div>';
+  document.getElementById('prevSection').innerHTML=html;
+  var opts='<option value="">— not available —</option>'+hdrs.map(function(h,i){return'<option value="'+i+'">'+(h||'col '+i)+'</option>';}).join('');
+  var labels={project:'Project Name',tower:'Tower/Building',unit:'Unit Name/No.',floor:'Floor No.',bedrooms:'Bedrooms',unit_type:'Unit Type',area:'Area (Sq.Ft)',price:'Price (AED)',view:'View'};
+  document.getElementById('mapGrid').innerHTML=Object.entries(labels).map(function(kv){
+    var f=kv[0],l=kv[1],ai=autoMap[f];
+    return'<div class="mrow"><span class="mlbl">'+l+'</span><select class="msel" id="mp_'+f+'">'+opts.replace('value="'+ai+'"','value="'+ai+'" selected')+'</select></div>';
+  }).join('');
+  openModal('mapModal');
+}
+
+function applyMapping(){
+  var fields=['project','tower','unit','floor','bedrooms','unit_type','area','price','view'],map={};
+  fields.forEach(function(f){var el=document.getElementById('mp_'+f);if(el&&el.value!=='')map[f]=parseInt(el.value);});
+  closeModal('mapModal');showLoad('Importing…');
+  importData(pendHdrs,pendRows,map);
+}
+
+// ── IMPORT ────────────────────────────────────────────────
+function importData(hdrs,rows,map){
+  allData=[];var skip=0;
+  rows.forEach(function(row){
+    if(!row||row.length<1)return;
+    var g=function(f){var i=map[f];if(i===undefined||i===null)return null;var v=row[i];return(v!==null&&v!==undefined)?String(v).trim():null;};
+    var price=pn(g('price_full'))||pn(g('price')),area=pn(g('area'));
+    var area_net=pn(g('area_net')),area_terrace=pn(g('area_terrace'));
+    if(!price||price<=0){skip++;return;}
+    var proj=g('project')||'';
+    if(/^total$/i.test(proj.trim()))return;
+    allData.push({project:proj,tower:g('tower')||'',unit:g('unit')||'',floor:pn(g('floor')),
+      bedrooms:normB(g('bedrooms')),unit_type:g('unit_type')||'',chargeable_area:area,
+      area_net:area_net,area_terrace:area_terrace,
+      price:price,view:g('view')||'',psf:(area&&price)?Math.round(price/area):null});
+  });
+  hideLoad();
+  if(!allData.length){setLog('✗ No valid units ('+skip+' skipped). Check column mapping.','warn');showMapModal(hdrs,rows,{});return;}
+  document.getElementById('ubadge').classList.add('on');
+  document.getElementById('ucount').textContent=allData.length.toLocaleString()+' units';
+  document.getElementById('uploadLabel').textContent=allData.length.toLocaleString()+' units loaded · Upload new file to refresh';
+  document.getElementById('statTotal').textContent=allData.length.toLocaleString();
+  document.getElementById('statSub').textContent=skip+' rows skipped · '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  setLog('✓ '+allData.length.toLocaleString()+' units imported. '+skip+' skipped.','ok');
+  clearFilters(true);selectedRows=new Map();buildChips();buildTowerChips();applyFilters();
+  document.getElementById('dtable').style.display='table';
+  document.getElementById('emptyEl').style.display='none';
+  document.getElementById('tcount').style.display='flex';
+}
+function pn(v){if(v===null||v===undefined||v==='')return null;var n=parseFloat(String(v).replace(/[,\s]/g,'').replace(/[^0-9.-]/g,''));return isNaN(n)?null:n;}
+function normB(v){if(!v)return '';var s=String(v).trim();if(/studio/i.test(s))return'Studio';if(/1\s*\+\s*study|1br.*study/i.test(s))return'1 BR + Study';var m=s.match(/^(\d+\.?\d*)\s*(bed|br)/i);if(m)return m[1]+' BR';return s;}
+
+// ── CHIPS ─────────────────────────────────────────────────
+function buildChips(){
+  var projs=[...new Set(allData.map(function(r){return r.project;}))].filter(Boolean).sort();
+  var pc=document.getElementById('projChips');pc.innerHTML='';
+  projs.forEach(function(p){
+    var ch=mkChip(p.length>24?p.substring(0,22)+'…':p,function(){toggle(selP,p,ch);buildTowerChips();});
+    ch.title=p;pc.appendChild(ch);
+  });
+  var beds=[...new Set(allData.map(function(r){return r.bedrooms;}))].filter(Boolean);
+  var sorted=BORD.filter(function(b){return beds.includes(b);});
+  var extra=beds.filter(function(b){return!BORD.includes(b);});
+  var bc=document.getElementById('bedChips');bc.innerHTML='';
+  sorted.concat(extra).forEach(function(b){var ch=mkChip(b,function(){toggle(selB,b,ch);});bc.appendChild(ch);});
+  buildTowerChips();
+}
+
+function buildTowerChips(){
+  var grp=document.getElementById('towerGrp'),tc=document.getElementById('towerChips');
+  // When a project IS selected: show only that project's towers
+  // When NO project selected: show ALL towers from all data
+  var src=selP.size>0?allData.filter(function(r){return selP.has(r.project);}):allData;
+  var towers=[...new Set(src.map(function(r){return r.tower;}))].filter(function(t){
+    return t&&String(t).trim()&&t!=='-'&&t!=='–'&&t!=='0'&&t!=='nan';
+  }).sort();
+  // Always show if any towers exist
+  if(towers.length===0){grp.style.display='none';selT.clear();return;}
+  grp.style.display='block';
+  var lbl=document.getElementById('towerGrpLabel');
+  if(selP.size===1){lbl.textContent=([...selP][0].replace('Sobha ',''))+' — Buildings';}
+  else if(selP.size>1){lbl.textContent='Buildings ('+selP.size+' projects)';}
+  else{lbl.textContent='Building / Sub-project';}
+  // Remove chips for towers no longer in scope but keep valid selections
+  selT.forEach(function(t){if(!towers.includes(t))selT.delete(t);});
+  tc.innerHTML='';
+  towers.forEach(function(t){
+    var ch=mkChip(t,function(){toggle(selT,t,ch);});
+    if(selT.has(t))ch.classList.add('on');
+    ch.title=t;tc.appendChild(ch);
+  });
+}
+
+function handleTagKey(e){
+  var input=document.getElementById('srch');
+  var val=input.value.trim();
+  // Enter or comma adds a tag
+  if((e.key==='Enter'||e.key===',')){
+    e.preventDefault();
+    var tag=val.replace(/,$/,'').trim();
+    if(tag&&!searchTags.includes(tag.toLowerCase())){
+      searchTags.push(tag.toLowerCase());
+      renderTags();
+    }
+    input.value='';
+    applyFilters();
+    return;
+  }
+  // Backspace on empty input removes last tag
+  if(e.key==='Backspace'&&val===''&&searchTags.length>0){
+    searchTags.pop();
+    renderTags();
+    applyFilters();
+  }
+}
+
+function renderTags(){
+  var row=document.getElementById('tagsRow');
+  row.innerHTML='';
+  searchTags.forEach(function(tag,i){
+    var sp=document.createElement('span');sp.className='stag';
+    sp.innerHTML=tag+'<span class="stag-x" onclick="removeTag('+i+')">×</span>';
+    row.appendChild(sp);
+  });
+  // Update placeholder
+  var input=document.getElementById('srch');
+  input.placeholder=searchTags.length>0?'Add more…':'Type + Enter or comma to add tag…';
+}
+
+function removeTag(i){
+  searchTags.splice(i,1);
+  renderTags();
+  applyFilters();
+}
+
+function toggle(set,val,el){set.has(val)?(set.delete(val),el.classList.remove('on')):(set.add(val),el.classList.add('on'));applyFilters();}
+
+// ── FILTERS ───────────────────────────────────────────────
+function applyFilters(){
+  var g=function(id){return parseFloat(document.getElementById(id).value)||null;};
+  var prMin=g('priceMin')||0,prMax=g('priceMax')||Infinity;
+  var pfMin=g('psfMin')||0,pfMax=g('psfMax')||Infinity;
+  var arMin=g('areaMin')||0,arMax=g('areaMax')||Infinity;
+  var flMin=g('floorMin')||-Infinity,flMax=g('floorMax')||Infinity;
+  var srchVal=document.getElementById('srch').value.toLowerCase().trim();
+  var sort=document.getElementById('sortsel').value;
+  // Combine committed tags + current typing
+  var allTerms=searchTags.slice();
+  if(srchVal)allTerms.push(srchVal);
+
+  filteredData=allData.filter(function(r){
+    if(selP.size&&!selP.has(r.project))return false;
+    if(selT.size&&!selT.has(r.tower))return false;
+    if(selB.size&&!selB.has(r.bedrooms))return false;
+    if(selV.size){var v=(r.view||'').toLowerCase();var ok=false;selV.forEach(function(kw){if(v.includes(kw.toLowerCase()))ok=true;});if(!ok)return false;}
+    if(r.price<prMin||r.price>prMax)return false;
+    if(r.psf&&(r.psf<pfMin||r.psf>pfMax))return false;
+    if(r.chargeable_area&&(r.chargeable_area<arMin||r.chargeable_area>arMax))return false;
+    if(r.floor!=null&&(r.floor<flMin||r.floor>flMax))return false;
+    if(allTerms.length>0){
+      var combo=(r.project+' '+r.tower+' '+r.unit+' '+r.bedrooms+' '+r.unit_type+' '+r.view).toLowerCase();
+      // ALL tags must match (AND logic)
+      for(var i=0;i<allTerms.length;i++){if(!combo.includes(allTerms[i]))return false;}
+    }
+    return true;
+  });
+
+  var sp=sort.split('_'),sf=sp[0],dir=sp[1]==='desc'?-1:1;
+  currentSortField=sf;currentSortDir=sp[1];
+  var fm={price:'price',psf:'psf',area:'chargeable_area',project:'project',floor:'floor'};
+  filteredData.sort(function(a,b){var av=a[fm[sf]||'price'],bv=b[fm[sf]||'price'];if(av==null&&bv==null)return 0;if(av==null)return 1;if(bv==null)return-1;return(typeof av==='string'?av.localeCompare(bv):(av-bv))*dir;});
+  curPage=1;renderTable();renderPager();updateStats();
+}
+
+function updateStats(){
+  var n=filteredData.length;
+  document.getElementById('rcount').textContent=n.toLocaleString();
+  if(n){
+    var ps=filteredData.map(function(r){return r.price;}).filter(Boolean);
+    var pf=filteredData.filter(function(r){return r.psf;}).map(function(r){return r.psf;});
+    var avg=pf.length?Math.round(pf.reduce(function(a,b){return a+b;},0)/pf.length):0;
+    var projs=new Set(filteredData.map(function(r){return r.project;})).size;
+    document.getElementById('statShowing').textContent=n.toLocaleString();
+    document.getElementById('statProjs').textContent=projs+' project'+(projs!==1?'s':'');
+    document.getElementById('statMin').textContent=fp(Math.min.apply(null,ps));
+    document.getElementById('statMax').textContent=fp(Math.max.apply(null,ps));
+    document.getElementById('statPsf').textContent=avg.toLocaleString();
+    document.getElementById('rmeta').textContent='AED '+fp(Math.min.apply(null,ps))+' – '+fp(Math.max.apply(null,ps))+'  ·  '+avg.toLocaleString()+' avg AED/sqft';
+  }
+}
+
+// ── TABLE (desktop: more columns) ─────────────────────────
+function rowKey(r){
+  // Unique key per unit — project+tower+unit+price
+  return (r.project||'')+'|'+(r.tower||'')+'|'+(r.unit||'')+'|'+(r.price||'');
+}
+
+function renderTable(){
+  var th=document.getElementById('thead'),tb=document.getElementById('tbody');
+  // Only show area columns that have at least one non-empty value in the current filtered data
+  var allAreaLabels=window._areaLabels&&window._areaLabels.length?window._areaLabels:['Total Area','Net Area','Terrace Area'];
+  var activeAreaLabels=allAreaLabels.filter(function(l){
+    return filteredData.some(function(r){return r.areas&&r.areas[l]&&r.areas[l]>0;});
+  });
+  if(!activeAreaLabels.length&&filteredData.some(function(r){return r.chargeable_area;}))activeAreaLabels=['Total Area'];
+  var areaCols=activeAreaLabels.map(function(l){return{k:'areas.'+l,l:l};});
+  var cols=[
+    {k:'project',l:'Project'},{k:'tower',l:'Tower / Sub-project'},{k:'unit',l:'Unit'},
+    {k:'floor',l:'Floor'},{k:'bedrooms',l:'Beds'},{k:'unit_type',l:'Unit Type'}
+  ].concat(areaCols).concat([
+    {k:'price',l:'Price (AED)'},{k:'psf',l:'AED/Sqft'},{k:'view',l:'View'}
+  ]);
+  th.innerHTML='<th class="chk-col"><input type="checkbox" class="row-chk" id="selAll" onclick="toggleSelectAll(this)" title="Select all on this page"></th>'
+    +cols.map(function(c){
+      var cls=currentSortField===c.k?(currentSortDir==='asc'?'sorted-asc':'sorted-desc'):'';
+      return'<th class="'+cls+'" onclick="thSort(\''+c.k+'\')">'+c.l+'</th>';
+    }).join('');
+  tb.innerHTML='';
+  if(!filteredData.length){
+    document.getElementById('dtable').style.display='none';
+    var es=document.getElementById('emptyEl');es.style.display='flex';
+    es.innerHTML='<svg viewBox="0 0 24 24"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2zm0 18a8 8 0 0 1-8-8 8 8 0 0 1 8-8 8 8 0 0 1 8 8 8 8 0 0 1-8 8z"/></svg><h3>No units match</h3><p>Try adjusting your filters</p>';
+    return;
+  }
+  document.getElementById('emptyEl').style.display='none';
+  document.getElementById('dtable').style.display='table';
+  var start=(curPage-1)*PG;
+  filteredData.slice(start,start+PG).forEach(function(r,i){
+    var key=rowKey(r);
+    var isSel=selectedRows.has(key);
+    var tr=document.createElement('tr');
+    if(isSel)tr.classList.add('selected');
+    tr.innerHTML='<td class="chk-col"><input type="checkbox" class="row-chk"'+(isSel?' checked':'')
+      +' onchange="toggleRow(this)" onclick="event.stopPropagation()" data-key="'+key.replace(/"/g,'&quot;')+'"></td>'
+      +'<td class="tp">'+(r.project||'–')+'</td>'
+      +'<td>'+(r.tower||'–')+'</td>'
+      +'<td class="tu">'+(r.unit||'–')+'</td>'
+      +'<td>'+(r.floor!=null?r.floor:'–')+'</td>'
+      +'<td class="tb">'+(r.bedrooms||'–')+'</td>'
+      +'<td style="color:var(--text3);font-size:11px">'+(r.unit_type||'–')+'</td>'
+      +activeAreaLabels.map(function(l){
+        var v=r.areas&&r.areas[l]?Math.round(r.areas[l]).toLocaleString():(r.chargeable_area&&activeAreaLabels.indexOf(l)===0?Math.round(r.chargeable_area).toLocaleString():'–');
+        return'<td>'+v+'</td>';
+      }).join('')
+      +'<td class="tpr">'+fp(r.price)+'</td>'
+      +'<td class="tpsf">'+(r.psf?r.psf.toLocaleString():'–')+'</td>'
+      +'<td><span class="vpill" title="'+(r.view||'')+'">'+(r.view||'–')+'</span></td>';
+    tr.addEventListener('click',function(e){
+      if(e.target.classList.contains('row-chk'))return;
+      var chk=tr.querySelector('.row-chk');
+      if(chk)toggleRow(chk);
+    });
+    // Store the row object on the tr for easy access
+    tr._rowData=r;
+    tb.appendChild(tr);
+  });
+  updateSelAll();
+}
+
+function toggleRow(chkEl){
+  var key=chkEl.getAttribute('data-key');
+  // Find the row object from filteredData
+  var r=filteredData.find(function(x){return rowKey(x)===key;});
+  if(!r){// might be from another filter state — try allData
+    r=allData.find(function(x){return rowKey(x)===key;});
+  }
+  if(selectedRows.has(key)){
+    selectedRows.delete(key);
+    chkEl.checked=false;
+    if(chkEl.closest('tr'))chkEl.closest('tr').classList.remove('selected');
+  }else{
+    if(r)selectedRows.set(key,r);
+    chkEl.checked=true;
+    if(chkEl.closest('tr'))chkEl.closest('tr').classList.add('selected');
+  }
+  updateSelBar();updateSelAll();
+}
+
+function toggleSelectAll(chkEl){
+  var start=(curPage-1)*PG;
+  var pageRows=filteredData.slice(start,start+PG);
+  pageRows.forEach(function(r){
+    var key=rowKey(r);
+    if(chkEl.checked){selectedRows.set(key,r);}
+    else{selectedRows.delete(key);}
+  });
+  document.querySelectorAll('#tbody tr').forEach(function(tr,i){
+    tr.classList.toggle('selected',selectedRows.has(rowKey(filteredData[start+i]||{})));
+  });
+  document.querySelectorAll('#tbody .row-chk').forEach(function(c,i){
+    var r=filteredData[start+i];
+    c.checked=r?selectedRows.has(rowKey(r)):false;
+  });
+  updateSelBar();
+}
+
+function updateSelAll(){
+  var sa=document.getElementById('selAll');if(!sa)return;
+  var start=(curPage-1)*PG;
+  var pg=filteredData.slice(start,start+PG);
+  var all=pg.length>0&&pg.every(function(r){return selectedRows.has(rowKey(r));});
+  var some=pg.some(function(r){return selectedRows.has(rowKey(r));});
+  sa.checked=all;sa.indeterminate=!all&&some;
+}
+
+function updateSelBar(){
+  var n=selectedRows.size;
+  document.getElementById('selBar').classList.toggle('on',n>0);
+  document.getElementById('selCount').textContent=n+' unit'+(n!==1?'s':'')+' selected';
+}
+
+function clearSelection(){
+  selectedRows=new Map();
+  document.querySelectorAll('#tbody tr').forEach(function(tr){tr.classList.remove('selected');});
+  document.querySelectorAll('#tbody .row-chk').forEach(function(c){c.checked=false;});
+  var sa=document.getElementById('selAll');if(sa){sa.checked=false;sa.indeterminate=false;}
+  updateSelBar();
+}
+
+function getExportData(selOnly){
+  if(selOnly&&selectedRows.size>0)
+    return Array.from(selectedRows.values());
+  return filteredData;
+}
+
+function thSort(field){
+  var sel=document.getElementById('sortsel');
+  var cur=sel.value;
+  sel.value=cur.startsWith(field)?(cur.endsWith('asc')?field+'_desc':field+'_asc'):field+'_asc';
+  applyFilters();
+}
+
+function renderPager(){
+  var tot=Math.ceil(filteredData.length/PG),pg=document.getElementById('pager');
+  if(tot<=1){pg.style.display='none';return;}
+  pg.style.display='flex';
+  document.getElementById('pinfo').textContent='Page '+curPage+' of '+tot+' · '+filteredData.length.toLocaleString()+' units';
+  var pb=document.getElementById('pbtns');pb.innerHTML='';
+  function ab(l,p,d){var b=document.createElement('button');b.className='pbtn'+(p===curPage?' on':'');b.textContent=l;b.disabled=!!d;b.onclick=function(){curPage=p;renderTable();renderPager();};pb.appendChild(b);}
+  ab('‹',curPage-1,curPage===1);
+  pgRange(curPage,tot).forEach(function(p){p==='…'?pb.innerHTML+='<span style="padding:0 3px;color:var(--text3)">…</span>':ab(p,p);});
+  ab('›',curPage+1,curPage===tot);
+}
+function pgRange(c,t){if(t<=7)return Array.from({length:t},function(_,i){return i+1;});if(c<=4)return[1,2,3,4,5,'…',t];if(c>=t-3)return[1,'…',t-4,t-3,t-2,t-1,t];return[1,'…',c-1,c,c+1,'…',t];}
+
+function clearFilters(silent){
+  selP.clear();selB.clear();selV.clear();selT.clear();
+  searchTags=[];renderTags();
+  document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');});
+  var tg=document.getElementById('towerGrp');if(tg)tg.style.display='none';
+  ['priceMin','priceMax','psfMin','psfMax','areaMin','areaMax','floorMin','floorMax','srch'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  if(!silent){buildTowerChips();applyFilters();}
+}
+
+// ── EXPORTS ───────────────────────────────────────────────
+function copyWA(e,selOnly){
+  var rows=getExportData(selOnly);
+  if(!rows.length){alert('No results.');return;}
+  var subset=rows.slice(0,50);
+  var txt='🏢 *Available Units — '+new Date().toLocaleDateString('en-GB')+'*\n_'+rows.length.toLocaleString()+' units'+(rows.length>50?' · showing 50':'')+'_\n';
+  if(smLine())txt+='\n📋 '+smLine()+'\n';
+  txt+='\n';
+  subset.forEach(function(r){
+    txt+='• *'+(r.project||'–')+'* | '+(r.bedrooms||'–')+' | '+(r.view||'N/A')+'\n';
+    txt+='  Floor '+(r.floor!=null?r.floor:'–')+(r.chargeable_area?' | '+Math.round(r.chargeable_area).toLocaleString()+' sqft':'')+' | AED '+fp(r.price)+(r.psf?' ('+r.psf.toLocaleString()+'/sqft)':'')+'\n\n';
+  });
+  var btn=e.currentTarget,orig=btn.innerHTML;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){flashBtn(btn,orig,'✓ Copied!');});
+  }else{fallbackCopy(txt);flashBtn(btn,orig,'✓ Copied!');}
+}
+
+function fallbackCopy(txt){var ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
+function flashBtn(btn,orig,msg){btn.innerHTML=msg;btn.style.opacity='.7';setTimeout(function(){btn.innerHTML=orig;btn.style.opacity='';},2000);}
+
+function exportCSV(mode,selOnly){
+  var rows=getExportData(selOnly);
+  if(!rows.length){alert('No data to export.');return;}
+  var lines=[];
+  if(smLine())lines.push('"Exported by","'+smLine()+'"');
+  lines.push('"Date","'+new Date().toLocaleDateString('en-GB')+'"');
+  if(mode==='broker')lines.push('"For","Approved Broker Use Only"');
+  if(selOnly&&selectedRows.size>0)lines.push('"Note","Selected units — '+rows.length+' of '+filteredData.length+'"');
+  lines.push('');
+  var aLabels=window._areaLabels&&window._areaLabels.length?window._areaLabels:['Total Area','Net Area','Terrace Area'];
+  lines.push(['"Project"','"Tower"','"Unit"','"Floor"','"Bedrooms"','"Unit Type"']
+    .concat(aLabels.map(function(l){return'"'+l+'"';}))
+    .concat(['"Price (AED)"','"AED/Sqft"','"View"']).join(','));
+  rows.forEach(function(r){
+    var areaCells=aLabels.map(function(l){
+      var v=r.areas&&r.areas[l]?Math.round(r.areas[l]):(r.chargeable_area&&aLabels.indexOf(l)===0?Math.round(r.chargeable_area):'');
+      return'"'+v+'"';
+    });
+    lines.push(['"'+(r.project||'')+'"','"'+(r.tower||'')+'"','"'+(r.unit||'')+'"',
+      '"'+(r.floor!=null?r.floor:'')+'"','"'+(r.bedrooms||'')+'"','"'+(r.unit_type||'')+'"']
+      .concat(areaCells)
+      .concat(['"'+r.price+'"','"'+(r.psf||'')+'"','"'+(r.view||'')+'"']).join(','));
+  });
+  var csv=lines.join('\n');
+  var fname=(mode==='broker'?'broker_inventory_':'inventory_')+(selOnly?'selection_':'')+today()+'.csv';
+  try{
+    var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');a.href=url;a.download=fname;a.style.display='none';
+    document.body.appendChild(a);a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},300);
+  }catch(err){
+    var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=fname;a.style.display='none';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+  }
+}
+
+function exportPDF(selOnly){
+  var rows=getExportData(selOnly);
+  if(!rows.length){alert('No data to export.');return;}
+  var btn=document.getElementById('pdfBtn'),orig=btn?btn.innerHTML:'';
+  if(btn){btn.innerHTML='⏳ Building…';btn.disabled=true;}
+  setTimeout(function(){
+    try{_doPDF(rows);}catch(e){alert('PDF error: '+e.message);}
+    if(btn){btn.innerHTML=orig;btn.disabled=false;}
+  },30);
+}
+
+function _doPDF(rows){
+  rows=rows||filteredData;
+  var sm=profile;
+  var date=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  rows=rows.slice(0,2000);
+  var prices=rows.map(function(r){return r.price;}).filter(Boolean);
+  var psfs=rows.filter(function(r){return r.psf;}).map(function(r){return r.psf;});
+  var avg=psfs.length?Math.round(psfs.reduce(function(a,b){return a+b;},0)/psfs.length):0;
+  var projs=new Set(rows.map(function(r){return r.project;})).size;
+  var p=new MiniPDF();
+  // Single primary area column — avoids Binghatti's 10 area cols (Plot/Total/Net/Terrace duplicates)
+  var primaryAreaLabel=(window._areaLabels&&window._areaLabels.length)?window._areaLabels[0]:'Built Up';
+  var COL_W=[38,20,22,10,10,22,18,28,16,93];
+  // 38+20+22+10+10+22+18+28+16+93 = 277mm on 277mm usable (297 - 2×10 margin)
+  var COLS=['Project','Tower','Unit','Fl.','Beds','Unit Type','Sqft','Price (AED)','AED/Sqft','View'];
+  var PAGE_W=297,PAGE_H=210,M=10,ROW_H=6.5,HEAD_H=8;
+  function drawPageHeader(){
+    p.fillRect(0,0,PAGE_W,17,[18,18,18]);
+    p.setFont('B',12);p.setColor([212,168,83]);p.text('INVENTORY REPORT',M,11);
+    p.setFont('',7);p.setColor([160,150,135]);p.text('Available Units  ·  Generated '+date,M,15.5);
+    p.setColor([100,90,80]);p.textR(filteredData.length.toLocaleString()+' units',PAGE_W-M,15.5);
+    var y=20;
+    if(sm.name||sm.dev){
+      p.fillRect(M,y,PAGE_W-M*2,12,[247,245,240]);
+      p.fillCircle(M+6,y+6,4.5,[160,120,48]);
+      p.setFont('B',7);p.setColor([240,216,152]);p.textC((sm.name||sm.dev).charAt(0).toUpperCase(),M+6,y+7.5,9);
+      p.setFont('B',9);p.setColor([28,28,28]);p.text(sm.name||sm.dev,M+13.5,y+5.5);
+      p.setFont('',7);p.setColor([100,90,80]);
+      p.text([sm.dev,sm.phone,sm.email,sm.brn].filter(Boolean).join('  ·  '),M+13.5,y+10);
+      y+=15;
+    }
+    var stats=[{l:'UNITS',v:filteredData.length.toLocaleString()},{l:'FROM',v:'AED '+fp(Math.min.apply(null,prices))},{l:'UP TO',v:'AED '+fp(Math.max.apply(null,prices))},{l:'AVG/SQFT',v:avg.toLocaleString()},{l:'PROJECTS',v:String(projs)}];
+    var bw=Math.floor((PAGE_W-M*2-8)/5),bh=9,bx=M;
+    stats.forEach(function(s){
+      p.fillRect(bx,y,bw,bh,[247,245,240]);p.fillRect(bx,y,1.5,bh,[212,168,83]);
+      p.setFont('',5.5);p.setColor([140,130,120]);p.text(s.l,bx+3,y+3.5);
+      p.setFont('B',8);p.setColor([28,28,28]);p.text(s.v,bx+3,y+8);
+      bx+=bw+2;
+    });
+    y+=12;
+    p.fillRect(M,y,PAGE_W-M*2,HEAD_H,[28,28,28]);
+    p.setFont('B',6.5);p.setColor([212,168,83]);
+    var cx=M;COLS.forEach(function(c,i){p.text(c,cx+1.5,y+5.5);cx+=COL_W[i];});
+    y+=HEAD_H;return y;
+  }
+  var y=drawPageHeader();
+  rows.forEach(function(r,idx){
+    if(y+ROW_H>PAGE_H-8){
+      p.setFont('',6);p.setColor([160,150,140]);
+      p.text(date+(sm.name?' · '+sm.name:''),M,PAGE_H-4);
+      p.textR('Page '+p.pageNum,PAGE_W-M,PAGE_H-4);
+      p.addPage();y=drawPageHeader();
+    }
+    if(idx%2===0)p.fillRect(M,y,PAGE_W-M*2,ROW_H,[247,245,240]);
+    var areaVal=(r.areas&&r.areas[primaryAreaLabel])?Math.round(r.areas[primaryAreaLabel]).toLocaleString():(r.chargeable_area?Math.round(r.chargeable_area).toLocaleString():'–');
+    var vals=[r.project||'–',r.tower||'–',r.unit||'–',r.floor!=null?String(r.floor):'–',r.bedrooms||'–',r.unit_type||'–',areaVal,fp(r.price),r.psf?r.psf.toLocaleString():'–',r.view||'–'];
+    var cx2=M;
+    vals.forEach(function(v,i){
+      var clipped=v.length>Math.floor(COL_W[i]/1.7)?v.substring(0,Math.floor(COL_W[i]/1.7))+'…':v;
+      if(i===0){p.setFont('B',7);p.setColor([20,20,20]);}
+      else if(i===7){p.setFont('B',7);p.setColor([160,120,48]);}
+      else if(i===8){p.setFont('B',6.5);p.setColor([120,95,40]);}
+      else{p.setFont('',7);p.setColor([70,62,55]);}
+      p.text(clipped,cx2+1.5,y+4.8);cx2+=COL_W[i];
+    });
+    p.setColor([220,215,208]);p.hLine(M,y+ROW_H,PAGE_W-M*2);
+    y+=ROW_H;
+  });
+  p.setFont('',6);p.setColor([160,150,140]);
+  p.text(date+'  ·  '+filteredData.length.toLocaleString()+' units'+(sm.name?' · '+sm.name:''),M,PAGE_H-4);
+  p.textR('Page '+p.pageNum+' / '+p.pageNum,PAGE_W-M,PAGE_H-4);
+  p.save('inventory_'+date.replace(/ /g,'-')+'.pdf');
+}
+
+// ── MINIPDF ───────────────────────────────────────────────
+function MiniPDF(){this.pages=[];this.pageNum=0;this.W=297;this.H=210;this._font='Helvetica';this._fontSize=10;this._r=0;this._g=0;this._b=0;this.addPage();}
+MiniPDF.prototype.addPage=function(){this.pageNum++;this._cur=[];this.pages.push(this._cur);};
+MiniPDF.prototype.setFont=function(style,size){this._bold=(style||'').indexOf('B')!==-1;this._font=this._bold?'Helvetica-Bold':'Helvetica';if(size)this._fontSize=size;this._cur.push('BT /'+this._font+' '+this._fontSize+' Tf ET');};
+MiniPDF.prototype.setColor=function(rgb){this._r=rgb[0];this._g=rgb[1];this._b=rgb[2];};
+MiniPDF.prototype._col=function(){return(this._r/255).toFixed(3)+' '+(this._g/255).toFixed(3)+' '+(this._b/255).toFixed(3);};
+MiniPDF.prototype._mmpt=function(mm){return(mm*2.8346).toFixed(3);};
+MiniPDF.prototype._y=function(mm){return this._mmpt(this.H-mm);};
+MiniPDF.prototype.fillRect=function(x,y,w,h,rgb){var r=rgb||[this._r,this._g,this._b];this._cur.push((r[0]/255).toFixed(3)+' '+(r[1]/255).toFixed(3)+' '+(r[2]/255).toFixed(3)+' rg');this._cur.push(this._mmpt(x)+' '+this._y(y+h)+' '+this._mmpt(w)+' '+this._mmpt(h)+' re f');};
+MiniPDF.prototype.fillCircle=function(cx,cy,r,rgb){var fc=rgb||[this._r,this._g,this._b];this._cur.push((fc[0]/255).toFixed(3)+' '+(fc[1]/255).toFixed(3)+' '+(fc[2]/255).toFixed(3)+' rg');var k=0.5523,x=this._mmpt(cx),y=this._y(cy),rp=this._mmpt(r),kp=(k*r*2.8346).toFixed(3);this._cur.push(x+' '+(parseFloat(y)+parseFloat(rp)).toFixed(3)+' m');this._cur.push((parseFloat(x)+parseFloat(kp))+' '+(parseFloat(y)+parseFloat(rp)).toFixed(3)+' '+(parseFloat(x)+parseFloat(rp))+' '+(parseFloat(y)+parseFloat(kp))+' '+(parseFloat(x)+parseFloat(rp)).toFixed(3)+' '+y+' c');this._cur.push((parseFloat(x)+parseFloat(rp)).toFixed(3)+' '+(parseFloat(y)-parseFloat(kp))+' '+(parseFloat(x)+parseFloat(kp))+' '+(parseFloat(y)-parseFloat(rp))+' '+x+' '+(parseFloat(y)-parseFloat(rp)).toFixed(3)+' c');this._cur.push((parseFloat(x)-parseFloat(kp))+' '+(parseFloat(y)-parseFloat(rp))+' '+(parseFloat(x)-parseFloat(rp))+' '+(parseFloat(y)-parseFloat(kp))+' '+(parseFloat(x)-parseFloat(rp)).toFixed(3)+' '+y+' c');this._cur.push((parseFloat(x)-parseFloat(rp)).toFixed(3)+' '+(parseFloat(y)+parseFloat(kp))+' '+(parseFloat(x)-parseFloat(kp))+' '+(parseFloat(y)+parseFloat(rp))+' '+x+' '+(parseFloat(y)+parseFloat(rp)).toFixed(3)+' c f');};
+MiniPDF.prototype.hLine=function(x,y,w){this._cur.push((this._r/255).toFixed(3)+' '+(this._g/255).toFixed(3)+' '+(this._b/255).toFixed(3)+' RG 0.3 w '+this._mmpt(x)+' '+this._y(y)+' m '+this._mmpt(x+w)+' '+this._y(y)+' l S');};
+MiniPDF.prototype.text=function(str,x,y){var safe=String(str).replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');this._cur.push(this._col()+' rg BT /'+this._font+' '+this._fontSize+' Tf '+this._mmpt(x)+' '+this._y(y)+' Td ('+safe+') Tj ET');};
+MiniPDF.prototype.textR=function(str,x,y){var approxW=str.length*this._fontSize*0.45;this.text(str,x-approxW/2.8346,y);};
+MiniPDF.prototype.textC=function(str,cx,y){var approxW=str.length*this._fontSize*0.45;this.text(str,cx-approxW/2.8346,y);};
+MiniPDF.prototype.save=function(filename){
+  var out=[],offsets={};
+  function nl(s){out.push(s+'\n');}
+  nl('%PDF-1.4');
+  var fonts=['Helvetica','Helvetica-Bold'],fontObjs={};
+  fonts.forEach(function(f,i){var n=3+i;offsets[n]=out.join('').length;nl(n+' 0 obj\n<<\n/Type /Font\n/Subtype /Type1\n/BaseFont /'+f+'\n/Encoding /WinAnsiEncoding\n>>\nendobj');fontObjs[f]=n;});
+  var ssStart=5,sObjs=[];
+  this.pages.forEach(function(cmds,pi){var stream=cmds.join('\n'),n=ssStart+pi;offsets[n]=out.join('').length;nl(n+' 0 obj\n<< /Length '+(stream.length+1)+' >>\nstream\n'+stream+'\nendstream\nendobj');sObjs.push(n);});
+  var poStart=ssStart+this.pages.length,pObjs=[],W=(this.W*2.8346).toFixed(2),H=(this.H*2.8346).toFixed(2);
+  sObjs.forEach(function(so,pi){var n=poStart+pi;offsets[n]=out.join('').length;nl(n+' 0 obj\n<<\n/Type /Page\n/Parent 2 0 R\n/MediaBox [0 0 '+W+' '+H+']\n/Contents '+so+' 0 R\n/Resources << /Font << /Helvetica '+fontObjs['Helvetica']+' 0 R /Helvetica-Bold '+fontObjs['Helvetica-Bold']+' 0 R >> >>\n>>\nendobj');pObjs.push(n);});
+  offsets[2]=out.join('').length;nl('2 0 obj\n<<\n/Type /Pages\n/Kids ['+pObjs.map(function(n){return n+' 0 R';}).join(' ')+']\n/Count '+pObjs.length+'\n>>\nendobj');
+  offsets[1]=out.join('').length;nl('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj');
+  var xp=out.join('').length,allN=Object.keys(offsets).map(Number).sort(function(a,b){return a-b;}),maxN=Math.max.apply(null,allN);
+  nl('xref\n0 '+(maxN+1));nl('0000000000 65535 f ');
+  for(var i=1;i<=maxN;i++){nl(offsets[i]!==undefined?String(offsets[i]).padStart(10,'0')+' 00000 n ':'0000000000 65535 f ');}
+  nl('trailer\n<< /Size '+(maxN+1)+' /Root 1 0 R >>');nl('startxref\n'+xp);nl('%%EOF');
+  var pdf=out.join(''),arr=new Uint8Array(pdf.length);
+  for(var i=0;i<pdf.length;i++)arr[i]=pdf.charCodeAt(i)&0xff;
+  var blob=new Blob([arr],{type:'application/pdf'}),url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=filename||'inventory.pdf';a.style.display='none';
+  document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},500);
+};
+
+// ── UTILS ─────────────────────────────────────────────────
+function fp(n){if(!n)return'–';if(n>=1e6)return(n/1e6).toFixed(2)+'M';return Math.round(n).toLocaleString();}
+function today(){return new Date().toISOString().slice(0,10);}
+function openModal(id){
+  if(id==='profModal'){
+    document.getElementById('smName').value=profile.name||'';
+    document.getElementById('smDev').value=profile.dev||'';
+    document.getElementById('smPhone').value=profile.phone||'';
+    document.getElementById('smEmail').value=profile.email||'';
+    document.getElementById('smBrn').value=profile.brn||'';
+    previewProfile();
+  }
+  document.getElementById(id).classList.add('on');
+}
+function closeModal(id){document.getElementById(id).classList.remove('on');}
+function showLoad(m){document.getElementById('loadMsg').textContent=m||'Loading…';document.getElementById('loadEl').classList.add('on');document.getElementById('emptyEl').style.display='none';document.getElementById('dtable').style.display='none';document.getElementById('pager').style.display='none';}
+function hideLoad(){document.getElementById('loadEl').classList.remove('on');}
+function setLog(m,t){var l=document.getElementById('plog');if(!m){l.className='parse-log';l.innerHTML='';return;}l.className='parse-log on';l.innerHTML='<span class="'+(t||'')+'">'+m+'</span>';}
+
+init();
+</script>
+</body>
+</html>
