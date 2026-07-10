@@ -1,0 +1,2358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binghatti — Product Knowledge Reference</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080d;--surface:#0e1119;--surface2:#151b27;--border:#1f2a3c;
+  --gold:#c9a227;--gold-dim:#8a6e1b;--text:#dde3ef;--muted:#7b8698;
+  --green:#22c55e;--amber:#f59e0b;--red:#ef4444;--blue:#60a5fa;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;line-height:1.6}
+h1{font-size:26px;color:var(--gold);font-weight:800;letter-spacing:-.5px}
+h2{font-size:16px;color:var(--gold);font-weight:700;margin-bottom:12px;border-bottom:1px solid var(--border);padding-bottom:6px}
+h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}
+h4{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+
+.page{max-width:1100px;margin:0 auto;padding:32px 24px}
+.topbar{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid var(--border)}
+.updated{font-size:11px;color:var(--muted)}
+
+/* Nav */
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+.nav a{padding:6px 14px;border-radius:20px;border:1px solid var(--border);color:var(--muted);text-decoration:none;font-size:12px;transition:all .15s}
+.nav a:hover{border-color:var(--gold-dim);color:var(--gold)}
+
+/* Summary table */
+.summary-table{width:100%;border-collapse:collapse;margin-bottom:40px;font-size:12px}
+.summary-table th{text-align:left;padding:8px 10px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+.summary-table td{padding:8px 10px;border-bottom:1px solid rgba(31,42,60,.5);vertical-align:middle}
+.summary-table tr:hover td{background:rgba(255,255,255,.02)}
+.rank{color:var(--muted);font-size:11px}
+.proj-name{font-weight:700;color:var(--text)}
+.proj-sub{color:var(--muted);font-size:11px}
+.avail-num{font-weight:700;color:var(--green);font-size:14px}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-right:3px}
+.badge-ready{background:rgba(34,197,94,.12);color:var(--green)}
+.badge-offplan{background:rgba(96,165,250,.1);color:var(--blue)}
+.badge-warn{background:rgba(245,158,11,.1);color:var(--amber)}
+.comm-high{color:var(--gold);font-weight:700}
+
+/* Project cards */
+.project-section{margin-bottom:48px;scroll-margin-top:80px}
+.project-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.card-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.card-header-left h3{font-size:18px;margin-bottom:2px}
+.card-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;align-items:center}
+.meta-pill{padding:3px 10px;border-radius:12px;font-size:11px;border:1px solid var(--border);color:var(--muted)}
+.meta-pill.gold{border-color:var(--gold-dim);color:var(--gold)}
+.card-avail{text-align:right;flex-shrink:0}
+.card-avail .num{font-size:28px;font-weight:800;color:var(--green);line-height:1}
+.card-avail .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.card-body{padding:18px 22px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+@media(max-width:700px){.card-body{grid-template-columns:1fr}}
+.fact-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+.fact-row{display:flex;flex-direction:column}
+.fact-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.fact-value{font-size:13px;font-weight:600;color:var(--text);margin-top:1px}
+
+/* Unit mix table */
+.mix-table{width:100%;border-collapse:collapse;font-size:12px}
+.mix-table th{text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.4px;padding:4px 8px;border-bottom:1px solid var(--border)}
+.mix-table td{padding:5px 8px;border-bottom:1px solid rgba(31,42,60,.4)}
+.mix-table .price{color:var(--gold);font-weight:600}
+.mix-table .count{color:var(--muted)}
+
+/* Commission box */
+.comm-box{background:rgba(201,162,39,.06);border:1px solid rgba(201,162,39,.2);border-radius:8px;padding:12px 14px}
+.comm-box .rate{font-size:20px;font-weight:800;color:var(--gold)}
+.comm-box .desc{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* Pitch points */
+.pitch-list{list-style:none;padding:0}
+.pitch-list li{padding:5px 0;border-bottom:1px solid rgba(31,42,60,.4);font-size:12px;padding-left:14px;position:relative}
+.pitch-list li::before{content:'→';position:absolute;left:0;color:var(--gold);font-size:10px;top:6px}
+.pitch-list li:last-child{border-bottom:none}
+
+/* Warning flag */
+.flag{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:6px;padding:8px 12px;font-size:11px;color:var(--amber);margin-top:8px}
+
+/* Location section */
+.location-section{scroll-margin-top:80px}
+.location-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:14px}
+.location-title{font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+.location-projects{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.loc-tag{padding:2px 9px;border-radius:4px;font-size:11px;background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+.drivers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+@media(max-width:600px){.drivers{grid-template-columns:1fr}}
+.driver-item{background:var(--surface2);border-radius:6px;padding:10px 12px}
+.driver-num{color:var(--gold);font-weight:800;font-size:13px;margin-bottom:3px}
+.driver-text{font-size:12px;color:var(--muted);line-height:1.5}
+.driver-text strong{color:var(--text)}
+
+/* Quick ref cards */
+.quick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:32px}
+.quick-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.quick-name{font-size:13px;font-weight:700;margin-bottom:6px}
+.quick-facts{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.qf{font-size:11px;color:var(--muted)}
+.qf strong{color:var(--text);display:block}
+
+/* Section divider */
+.section-title{font-size:20px;font-weight:800;color:var(--gold);margin:40px 0 20px;padding-top:20px;border-top:1px solid var(--border)}
+
+/* Sticky nav */
+.sticky-nav{position:sticky;top:0;background:rgba(7,8,13,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 0;z-index:100;margin-bottom:32px}
+.sticky-inner{max-width:1100px;margin:0 auto;padding:0 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.sticky-inner a{padding:4px 12px;border-radius:12px;border:1px solid var(--border);color:var(--muted);text-decoration:none;font-size:11px;white-space:nowrap;transition:all .12s}
+.sticky-inner a:hover{border-color:var(--gold-dim);color:var(--gold)}
+.sticky-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-right:4px;white-space:nowrap}
+
+/* ── Search bar ── */
+.search-wrap{padding:0 0 28px}
+.search-input-wrap{position:relative;display:flex;align-items:center}
+.search-input{width:100%;padding:15px 46px 15px 48px;background:var(--surface);border:2px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s}
+.search-input:focus{border-color:var(--gold-dim);box-shadow:0 0 0 3px rgba(201,162,39,.08)}
+.search-input::placeholder{color:var(--muted);font-size:13px}
+.search-icon{position:absolute;left:16px;color:var(--muted);pointer-events:none;font-size:17px;line-height:1}
+.search-clear{position:absolute;right:14px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:22px;padding:0;line-height:1;display:none;transition:color .1s}
+.search-clear:hover{color:var(--text)}
+.search-clear.visible{display:block}
+.search-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.stag{padding:5px 13px;border-radius:16px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:11px;cursor:pointer;transition:all .12s;user-select:none}
+.stag:hover{border-color:var(--gold-dim);color:var(--gold);background:rgba(201,162,39,.07)}
+.search-results{font-size:12px;color:var(--muted);margin-top:10px;min-height:18px}
+.search-results strong{color:var(--gold)}
+.no-results{text-align:center;padding:60px 0;color:var(--muted);display:none}
+.no-results p{font-size:16px;margin-bottom:6px}
+
+/* ── Sortable columns ── */
+#summaryTable th[data-col]{cursor:pointer;user-select:none;white-space:nowrap}
+#summaryTable th[data-col]:hover{color:var(--gold)}
+#summaryTable th[data-col]::after{content:' ⇕';opacity:.28;font-size:.72em}
+#summaryTable th.sort-asc::after{content:' ▲';opacity:1;color:var(--gold)}
+#summaryTable th.sort-desc::after{content:' ▼';opacity:1;color:var(--gold)}
+
+/* ── Per-card section tabs ─────────────────────────────────────────────── */
+.card-tabs{display:flex;gap:5px;flex-wrap:wrap;padding:7px 16px;border-top:1px solid rgba(255,255,255,.07);background:rgba(0,0,0,.18)}
+.card-tab{padding:3px 12px;border-radius:20px;font-size:10.5px;cursor:pointer;border:1px solid rgba(255,255,255,.12);background:transparent;color:var(--muted);font-family:inherit;transition:all .15s;line-height:1.7}
+.card-tab:hover{color:var(--text);border-color:rgba(255,255,255,.3)}
+.card-tab.active{background:var(--gold);color:#1a1200;border-color:var(--gold);font-weight:600}
+.card-body.tab-filtered{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))!important}
+.card-body .tab-hidden{display:none!important}
+
+/* ── Collapsible layout detail ─────────────────────────────────────────── */
+details.layout-detail{margin:5px 0}
+details.layout-detail summary{cursor:pointer;color:var(--gold);font-size:10.5px;list-style:none;padding:4px 0;user-select:none;display:flex;align-items:center;gap:5px}
+details.layout-detail summary::-webkit-details-marker{display:none}
+details.layout-detail summary::before{content:'▶';font-size:9px;flex-shrink:0}
+details.layout-detail[open] summary::before{content:'▼'}
+.layout-table{width:100%;border-collapse:collapse;font-size:10.5px;margin:4px 0 6px}
+.layout-table th{color:var(--muted);font-weight:normal;font-size:10px;padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.09);text-align:left;background:rgba(0,0,0,.18)}
+.layout-table td{padding:3px 8px;border-bottom:1px solid rgba(255,255,255,.04)}
+.layout-table tr:last-child td{border-bottom:none}
+.lt-note{color:var(--gold)!important;font-size:9.5px}
+.lt-pool{color:#64b4ff!important;font-size:9.5px}
+/* Clickable project name */
+a.proj-link{color:var(--gold);text-decoration:none;font-weight:700}
+a.proj-link:hover{text-decoration:underline}
+/* Developer credentials strip */
+.dev-creds{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:28px}
+.dev-creds-item{background:var(--surface);padding:14px 16px;text-align:center}
+.dev-creds-num{font-size:20px;font-weight:800;color:var(--gold);line-height:1;margin-bottom:3px}
+.dev-creds-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;line-height:1.4}
+.dev-creds-zero{color:#22c55e}
+.dev-proof{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:28px}
+.dev-proof-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.dev-proof-title{font-size:11px;font-weight:700;color:var(--text);margin-bottom:4px}
+.dev-proof-text{font-size:11px;color:var(--muted);line-height:1.5}
+.dev-proof-text strong{color:var(--gold)}
+@media(max-width:700px){.dev-creds{grid-template-columns:repeat(3,1fr)}.dev-proof{grid-template-columns:1fr}}
+/* Floating back-to-table button */
+#back-to-table{position:fixed;bottom:22px;right:22px;background:var(--surface2);border:1px solid var(--gold);color:var(--gold);padding:7px 16px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;z-index:9999;opacity:0;pointer-events:none;transition:opacity .22s,background .15s;font-family:inherit;letter-spacing:.3px}
+#back-to-table.visible{opacity:1;pointer-events:auto}
+#back-to-table:hover{background:var(--gold);color:#1a1200}
+/* Structure subtitle in table */
+.proj-struct{font-size:9px;color:var(--muted);font-weight:400;margin-top:1px;letter-spacing:.2px;font-family:monospace}
+</style>
+</head>
+<body>
+
+<div class="sticky-nav">
+  <div class="sticky-inner">
+    <span class="sticky-label">Jump to</span>
+    <a href="#summary">All Projects</a>
+    <a href="#meydan-projects">Meydan</a>
+    <a href="#tilal">Tilal</a>
+    <a href="#sky-terraces">Sky Terraces</a>
+    <a href="#skyflame">Skyflame</a>
+    <a href="#mbp-downtown">MBP Downtown</a>
+    <a href="#aquarise">Aquarise</a>
+    <a href="#wraith">Wraith</a>
+    <a href="#luxuria">Luxuria</a>
+    <a href="#etherea">Etherea</a>
+    <a href="#hillcrest">Hillcrest</a>
+    <a href="#quick-ref">Smaller Inventory</a>
+    <a href="#locations">Location Guide</a>
+  </div>
+</div>
+
+<div class="page">
+
+<div class="topbar">
+  <div>
+    <h1>Binghatti — Product Knowledge</h1>
+    <div class="updated">26 projects · As of 02 Jul 2026 · Sorted by available units · ⚠️ = data incomplete or needs verification</div>
+  </div>
+</div>
+
+<!-- ── DEVELOPER CREDENTIALS ── -->
+<div class="dev-creds">
+  <div class="dev-creds-item">
+    <div class="dev-creds-num">#1</div>
+    <div class="dev-creds-label">Sales Volume<br>Dubai 2025</div>
+  </div>
+  <div class="dev-creds-item">
+    <div class="dev-creds-num">17K</div>
+    <div class="dev-creds-label">Units Sold<br>2025 · vs DAMAC 15K</div>
+  </div>
+  <div class="dev-creds-item">
+    <div class="dev-creds-num">20,000+</div>
+    <div class="dev-creds-label">Units<br>Handed Over</div>
+  </div>
+  <div class="dev-creds-item">
+    <div class="dev-creds-num">79+</div>
+    <div class="dev-creds-label">Projects<br>Completed</div>
+  </div>
+  <div class="dev-creds-item">
+    <div class="dev-creds-num dev-creds-zero">0 / 0 / 0</div>
+    <div class="dev-creds-label">Delays · Cancellations<br>DLD Complaints</div>
+  </div>
+</div>
+
+<div class="dev-proof">
+  <div class="dev-proof-item">
+    <div class="dev-proof-title">Capital Growth — Completed Projects</div>
+    <div class="dev-proof-text">Verified returns on handed-over units: <strong>+38% to +52%</strong> capital gain. Rental yields: <strong>6.64% – 9.84%</strong>. Source: Binghatti investor data 2025.</div>
+  </div>
+  <div class="dev-proof-item">
+    <div class="dev-proof-title">Market Position 2025</div>
+    <div class="dev-proof-text">Outsold every developer in Dubai: <strong>17K units</strong> vs DAMAC 15K · Emaar 13K · Sobha 10K. Source: DXB Interact. GDV exceeds <strong>AED 80 billion</strong>.</div>
+  </div>
+  <div class="dev-proof-item">
+    <div class="dev-proof-title">Top Buyer Nationalities 2025</div>
+    <div class="dev-proof-text">UAE 2,002 · India 1,730 · Turkey 864 · Egypt 722 · UK 629 · Pakistan 586 · China 498 · Saudi 461 · Syria 438 · Iran 371 — <strong>global demand base</strong>, not a single-market story.</div>
+  </div>
+</div>
+
+<!-- ── SEARCH BAR ── -->
+<div class="search-wrap">
+  <div class="search-input-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="globalSearch" type="text"
+      placeholder="Type anything: retail · office · villa · 4 bed · business bay · motor city · studio · ready...">
+    <button class="search-clear" id="searchClear" onclick="clearSearch()">×</button>
+  </div>
+  <div class="search-tags">
+    <span class="stag" onclick="setSearch('Business Bay')">Business Bay</span>
+    <span class="stag" onclick="setSearch('Al Jaddaf')">Al Jaddaf</span>
+    <span class="stag" onclick="setSearch('Meydan')">Meydan</span>
+    <span class="stag" onclick="setSearch('JVC')">JVC</span>
+    <span class="stag" onclick="setSearch('JVT')">JVT</span>
+    <span class="stag" onclick="setSearch('Motor City')">Motor City</span>
+    <span class="stag" onclick="setSearch('Majan')">Majan</span>
+    <span class="stag" onclick="setSearch('Academic City')">Academic City</span>
+    <span class="stag" onclick="setSearch('villa')">Villa</span>
+    <span class="stag" onclick="setSearch('townhouse')">Townhouse</span>
+    <span class="stag" onclick="setSearch('retail')">Retail</span>
+    <span class="stag" onclick="setSearch('office')">Office</span>
+    <span class="stag" onclick="setSearch('commercial')">Commercial</span>
+    <span class="stag" onclick="setSearch('studio')">Studio</span>
+    <span class="stag" onclick="setSearch('1 bed')">1 Bed</span>
+    <span class="stag" onclick="setSearch('2 bed')">2 Bed</span>
+    <span class="stag" onclick="setSearch('3 bed')">3 Bed</span>
+    <span class="stag" onclick="setSearch('4 bed')">4 Bed</span>
+    <span class="stag" onclick="setSearch('5 bed')">5 Bed</span>
+    <span class="stag" onclick="setSearch('6 bed')">6 Bed</span>
+    <span class="stag" onclick="setSearch('ready')">Ready Now</span>
+    <span class="stag" onclick="setSearch('7%')">7% Commission</span>
+    <span class="stag" onclick="setSearch('pool')">Pool Unit</span>
+    <span class="stag" onclick="setSearch('mansion')">Mansion</span>
+  </div>
+  <div class="search-results" id="searchResults"></div>
+</div>
+<div class="no-results" id="noResults">
+  <p>No results for that search</p>
+  <small style="font-size:12px">Try: villa · retail · business bay · 4 bed · studio</small>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SUMMARY TABLE -->
+<!-- ═══════════════════════════════════════════════ -->
+<h2 id="summary">All Projects — Quick Reference</h2>
+<table class="summary-table" id="summaryTable">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th data-col="1" onclick="sortTable(1,'str')">Project</th>
+      <th data-col="2" onclick="sortTable(2,'str')">Location</th>
+      <th data-col="3" onclick="sortTable(3,'num')">Available</th>
+      <th data-col="4" onclick="sortTable(4,'num')">Total Inv.</th>
+      <th data-col="5" onclick="sortTable(5,'date')">Handover</th>
+      <th>Status</th>
+      <th>Plan</th>
+      <th data-col="8" onclick="sortTable(8,'num')">From (AED)</th>
+      <th>Commission</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td class="rank">1</td><td><a href="#vision-iconic" class="proj-link">Vision Iconic</a><div class="proj-sub">MBC Tower 6</div><div class="proj-struct">B+G+Mez+5P+66F+9Mech</div></td><td>Nad Al Sheba</td><td><span class="avail-num">877</span></td><td>1,404 + 21 retail</td><td>Jun 2028</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30 · 60/40</td><td>⚠️ TBC</td><td>5%</td></tr>
+    <tr><td class="rank">2</td><td><a href="#mercedes-city" class="proj-link">Maybach Ult. Luxury</a><div class="proj-sub">MBC Towers 2–3</div><div class="proj-struct">B+G+Mez+5P+19F/25F</div></td><td>Nad Al Sheba</td><td><span class="avail-num">848</span></td><td>1,204 + 28 retail</td><td>Apr 2028</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>1,600,000</td><td>5% / 6% cash</td></tr>
+    <tr><td class="rank">3</td><td><a href="#mercedes-city" class="proj-link">Project Maybach</a><div class="proj-sub">MBC Tower 1</div><div class="proj-struct">B+G+Mez+5P+24F</div></td><td>Nad Al Sheba</td><td><span class="avail-num">550</span></td><td>816 + 15 retail</td><td>Dec 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>1,600,000</td><td>5% / 6% cash</td></tr>
+    <tr><td class="rank">4</td><td><a href="#mercedes-city" class="proj-link">Maybach 6</a><div class="proj-sub">MBC Towers 4–5</div><div class="proj-struct">B+G+Mez+5P+29F/34F</div></td><td>Nad Al Sheba</td><td><span class="avail-num">417</span></td><td>1,844 + 34 retail</td><td>Apr 2028</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>1,600,000</td><td>5% / 6% cash</td></tr>
+    <tr><td class="rank">—</td><td><a href="#mercedes-city" class="proj-link">AMG Vision</a><div class="proj-sub">MBC Towers 8–9</div><div class="proj-struct">B+G+Mez+5P+52F+4Mech / 47F+2Mech</div></td><td>Nad Al Sheba</td><td><span class="avail-num">⚠️</span></td><td>2,692 + 35 retail</td><td>⚠️ TBC</td><td><span class="badge badge-offplan">Off-plan</span></td><td>⚠️ TBC</td><td>⚠️ TBC</td><td>5%</td></tr>
+    <tr><td class="rank">—</td><td><a href="#mercedes-city" class="proj-link">Vision Simplex</a><div class="proj-sub">MBC Towers 11–12</div><div class="proj-struct">B+G+Mez+5P+35F+2Mech / 29F+2Mech</div></td><td>Nad Al Sheba</td><td><span class="avail-num">⚠️</span></td><td>2,208 + 34 retail</td><td>⚠️ TBC</td><td><span class="badge badge-offplan">Off-plan</span></td><td>⚠️ TBC</td><td>⚠️ TBC</td><td>5%</td></tr>
+    <tr><td class="rank">—</td><td><a href="#mercedes-city" class="proj-link">Vision AVTR</a><div class="proj-sub">MBC Tower 10</div><div class="proj-struct">B+G+Mez+5P+41F+2Mech</div></td><td>Nad Al Sheba</td><td><span class="avail-num">⚠️</span></td><td>1,280 + 23 retail</td><td>⚠️ TBC</td><td><span class="badge badge-offplan">Off-plan</span></td><td>⚠️ TBC</td><td>⚠️ TBC</td><td>5%</td></tr>
+    <tr><td class="rank">—</td><td><a href="#mercedes-city" class="proj-link">Vision One-Eleven</a><div class="proj-sub">MBC Tower 7 · no studios</div><div class="proj-struct">B+G+Mez+5P+60F+4Mech</div></td><td>Nad Al Sheba</td><td><span class="avail-num">⚠️</span></td><td>1,366 + 18 retail</td><td>⚠️ TBC</td><td><span class="badge badge-offplan">Off-plan</span></td><td>⚠️ TBC</td><td>⚠️ TBC</td><td>5%</td></tr>
+    <tr><td class="rank">5</td><td><a href="#tilal" class="proj-link">Tilal</a><div class="proj-sub">Al Rowaiyah · Villa masterplan</div><div class="proj-struct">G+2 · 621,815 sqm</div></td><td>Al Rowaiyah</td><td><span class="avail-num">377</span></td><td>1,432 TH/Villas</td><td>Q1 2029</td><td><span class="badge badge-offplan">Off-plan</span></td><td>60/40</td><td>4,200,000</td><td>Standard villa</td></tr>
+    <tr><td class="rank">6</td><td><a href="#sky-terraces" class="proj-link">Sky Terraces</a><div class="proj-struct">2B+G+6P+40F+2Mech+Roof</div></td><td>Motor City</td><td><span class="avail-num">303</span></td><td>1,840 + 26 retail</td><td>Dec 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>774,999</td><td>TBC</td></tr>
+    <tr><td class="rank">7</td><td><a href="#skyflame" class="proj-link">Skyflame 2</a><div class="proj-sub">Tower #4399 · Majan</div><div class="proj-struct">⚠️ structure TBC</div></td><td>Majan</td><td><span class="avail-num">261</span></td><td>782 + 19 retail</td><td>Dec 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30 / 60/40*</td><td>699,999</td><td>5% / 6% cash</td></tr>
+    <tr><td class="rank">8</td><td><a href="#aquarise" class="proj-link">Aquarise</a><div class="proj-struct">3B+G+Mez+25F+Mech+Roof</div></td><td>Business Bay</td><td><span class="avail-num">167</span></td><td>1,598 + 28 retail</td><td>Mar 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>⚠️ TBC</td><td class="comm-high">6% / 7% cash</td></tr>
+    <tr><td class="rank">9</td><td><a href="#wraith" class="proj-link">Wraith</a><div class="proj-struct">G+4P+14F+Roof</div></td><td>Al Jaddaf</td><td><span class="avail-num">166</span></td><td>855 + 34 retail</td><td>Dec 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30 · 50/50</td><td>⚠️ TBC</td><td>5% / 6% cash</td></tr>
+    <tr><td class="rank">10</td><td><a href="#luxuria" class="proj-link">Luxuria</a><div class="proj-struct">3B+G+4P+24F</div></td><td>JVT</td><td><span class="avail-num">157</span></td><td>457 + 12 retail</td><td>Jul 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>766,999</td><td>TBC</td></tr>
+    <tr><td class="rank">11</td><td><a href="#etherea" class="proj-link">Etherea</a><div class="proj-struct">B+G+5P+22F</div></td><td>JVC</td><td><span class="avail-num">121</span></td><td>282 + 5 retail</td><td>Dec 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>789,999</td><td>5% / 6% cash</td></tr>
+    <tr><td class="rank">12</td><td><a href="#hillcrest" class="proj-link">Hillcrest</a><div class="proj-struct">1B+G+4F</div></td><td>Arjan</td><td><span class="avail-num">89</span></td><td>322 + 28 retail</td><td>Dec 2026</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>820,999</td><td>Standard</td></tr>
+    <tr><td class="rank">13</td><td><span class="proj-name">Burj Jacob &amp; Co</span><div class="proj-struct">⚠️ structure TBC</div></td><td>Business Bay</td><td><span class="avail-num">77</span></td><td>⚠️</td><td>Apr 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>⚠️</td><td class="comm-high">7% / 7% cash</td></tr>
+    <tr><td class="rank">14</td><td><a href="#skyflame" class="proj-link">Skyflame 1</a><div class="proj-sub">Tower #4393 · Majan</div><div class="proj-struct">⚠️ structure TBC</div></td><td>Majan</td><td><span class="avail-num">73</span></td><td>1,378 + 29 retail</td><td>Dec 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30 / 60/40*</td><td>699,999</td><td>5% / 6% cash</td></tr>
+    <tr><td class="rank">15</td><td><span class="proj-name">Bugatti Residences</span><div class="proj-struct">⚠️ structure TBC</div></td><td>Business Bay</td><td><span class="avail-num">53</span></td><td>⚠️</td><td>Feb 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>⚠️</td><td class="comm-high">7% / 7% cash</td></tr>
+    <tr><td class="rank">16</td><td><span class="proj-name">Ghost</span><div class="proj-struct">⚠️ structure TBC</div></td><td>Al Jaddaf</td><td><span class="avail-num">50</span></td><td>⚠️</td><td>Apr 2026</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>⚠️</td><td>5% / 6% cash</td></tr>
+    <tr><td class="rank">17</td><td><span class="proj-name">Cullinan</span><div class="proj-struct">⚠️ structure TBC</div></td><td>Al Jaddaf</td><td><span class="avail-num">33</span></td><td>⚠️</td><td>Jun 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>⚠️</td><td>5% / 6% cash</td></tr>
+    <tr><td class="rank">18</td><td><span class="proj-name">Flare 01</span><div class="proj-struct">⚠️ structure TBC</div></td><td>⚠️ Unknown</td><td><span class="avail-num">32</span></td><td>⚠️</td><td>⚠️</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>⚠️</td><td>⚠️</td></tr>
+    <tr><td class="rank">19</td><td><span class="proj-name">Flare 02</span><div class="proj-struct">⚠️ structure TBC</div></td><td>JVT</td><td><span class="avail-num">30</span></td><td>⚠️</td><td>Aug 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>⚠️</td><td>5% / 6% cash</td></tr>
+    <tr><td class="rank">20</td><td><span class="proj-name">Moonlight</span><div class="proj-struct">⚠️ structure TBC</div></td><td>Al Jaddaf</td><td><span class="avail-num">18</span></td><td>⚠️</td><td>Mar 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>⚠️</td><td>5% / 6% cash</td></tr>
+    <tr><td class="rank">21</td><td><span class="proj-name">Twilight</span><div class="proj-struct">⚠️ structure TBC</div></td><td>⚠️ Unknown</td><td><span class="avail-num">18</span></td><td>⚠️</td><td>⚠️</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>⚠️</td><td>⚠️</td></tr>
+    <tr><td class="rank">22</td><td><span class="proj-name">Sky Rise</span><div class="proj-struct">⚠️ structure TBC</div></td><td>Business Bay</td><td><span class="avail-num">15</span></td><td>⚠️</td><td>Jun 2027</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>⚠️</td><td class="comm-high">6% / 7% cash</td></tr>
+    <tr><td class="rank">23</td><td><span class="proj-name">Pinnacle</span><div class="proj-struct">⚠️ structure TBC</div></td><td>Al Jaddaf</td><td><span class="avail-num">12</span></td><td>⚠️</td><td>Mar 2026</td><td><span class="badge badge-ready">READY</span></td><td>70/30</td><td>⚠️</td><td>5% / 6% cash</td></tr>
+    <tr><td class="rank">24</td><td><span class="proj-name">Amberhall</span><div class="proj-struct">⚠️ structure TBC</div></td><td>JVC</td><td><span class="avail-num">11</span></td><td>⚠️</td><td>Oct 2026</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>⚠️</td><td class="comm-high">6% / 7% cash</td></tr>
+    <tr><td class="rank">25</td><td><span class="proj-name">Elite</span><div class="proj-struct">⚠️ structure TBC</div></td><td>IMPZ</td><td><span class="avail-num">11</span></td><td>⚠️</td><td>Jul 2026</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>⚠️</td><td>5% / 5% cash</td></tr>
+    <tr><td class="rank">26</td><td><a href="#mercedes-city" class="proj-link">MBC — Meydan City</a><div class="proj-sub">Towers 1–5 umbrella view</div><div class="proj-struct">3,940 combined units</div></td><td>Meydan</td><td><span class="avail-num">45</span></td><td>3,940 combined</td><td>Dec 2027–Apr 2028</td><td><span class="badge badge-offplan">Off-plan</span></td><td>70/30</td><td>1,600,000</td><td>5% / 6% cash</td></tr>
+    <tr><td class="rank">27</td><td><a href="#mbp-downtown" class="proj-link">Mercedes-Benz Places</a><div class="proj-sub">Downtown Dubai · Hyper-Tower</div><div class="proj-struct">341M · 150 suites + penthouses</div></td><td>Downtown Dubai</td><td><span class="avail-num">⚠️</span></td><td>150 total</td><td>⚠️ TBC</td><td><span class="badge badge-offplan">Off-plan</span></td><td>⚠️ TBC</td><td>⚠️ TBC</td><td>⚠️ TBC</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- MEYDAN PROJECTS -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section-title" id="meydan-projects">🏙️ Meydan Projects (4 towers — Mercedes-Benz City + Vision Iconic)</div>
+
+<!-- Vision Iconic -->
+<div class="project-section" id="vision-iconic">
+  <div class="project-card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <h3>Vision Iconic</h3>
+        <div class="card-meta">
+          <span class="meta-pill">📍 Meydan</span>
+          <span class="meta-pill gold">Jun 2028</span>
+          <span class="meta-pill">70/30 · 60/40</span>
+          <span class="badge badge-offplan">Off-plan</span>
+        </div>
+      </div>
+      <div class="card-avail"><div class="num">877</div><div class="lbl">Available</div></div>
+    </div>
+    <div class="card-body">
+      <div>
+        <h4>Fast Facts</h4>
+        <div class="fact-grid">
+          <div class="fact-row"><span class="fact-label">Commission</span><span class="fact-value">5% standard</span></div>
+          <div class="fact-row"><span class="fact-label">Status</span><span class="fact-value">Off-plan</span></div>
+          <div class="fact-row"><span class="fact-label">Payment plans</span><span class="fact-value">70/30 · 60/40</span></div>
+          <div class="fact-row"><span class="fact-label">Total inventory</span><span class="fact-value">⚠️ Not provided</span></div>
+        </div>
+        <div class="flag">⚠️ Unit mix, pricing, structure and service charge not in provided data. Verify with Binghatti before pitching.</div>
+      </div>
+      <div>
+        <h4>Key Pitch Points</h4>
+        <ul class="pitch-list">
+          <li>Highest available inventory of any single project — 877 units means maximum choice for clients</li>
+          <li>Two payment plan options (70/30 AND 60/40) — more flexibility than most</li>
+          <li>Meydan address — premium community, strong long-term upside</li>
+          <li>Jun 2028 handover — medium-term hold</li>
+        </ul>
+      </div>
+      <div>
+        <div class="comm-box">
+          <div class="rate">5%</div>
+          <div class="desc">Standard commission<br>Full cash rate: confirm with team</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mercedes-Benz City — 12 towers -->
+<div class="project-section" id="mercedes-city">
+  <div class="project-card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <h3>Mercedes-Benz Places | Binghatti City</h3>
+        <div class="card-meta">
+          <span class="meta-pill">📍 Nad Al Sheba (adj. Meydan)</span>
+          <span class="meta-pill gold">Dec 2027 onwards</span>
+          <span class="meta-pill">70/30 · 10% DP</span>
+          <span class="badge badge-offplan">Off-plan</span>
+          <span class="meta-pill">12 towers · 8 project names</span>
+          <span class="meta-pill">World's first MB branded city</span>
+        </div>
+      </div>
+      <div class="card-avail"><div class="num">1,815</div><div class="lbl">Combined avail.</div></div>
+    </div>
+
+    <!-- WHAT MB BRANDING ACTUALLY MEANS -->
+    <div style="padding:14px 22px;border-top:1px solid var(--border);background:rgba(201,162,39,.04)">
+      <h4 style="color:var(--gold)">What Mercedes-Benz Branding Actually Delivers — Beyond the Name</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:.3px">DESIGN LANGUAGE TRANSLATION</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.8">Mercedes-Benz's automotive design philosophy — <em>"sensual purity"</em> — is applied directly to the architecture. The same design principle behind MB cars (clarity without compromise, flowing sculptural form, precision detailing) governs every facade, lobby, and interior surface. Buildings feature sculpted, flowing surfaces that embody <strong style="color:var(--text)">kinetic energy and motion</strong>, drawn from MB performance design DNA. This is not a logo on a building — it is an entire design vocabulary translated from the automobile to the cityscape.</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:.3px">ENGINEERING PRECISION STANDARDS</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.8">The <strong style="color:var(--text)">Acoustic System</strong> in every unit mirrors Mercedes-Benz's legendary cabin sound engineering — the same discipline that makes an S-Class silent at 250 km/h applied to separating residents from urban noise. The <strong style="color:var(--text)">Smart System</strong> reflects MB's connected-car technology philosophy: intelligent home automation embedded as a standard, not an add-on. Buildings are developed on a rational, functional grid delivering visual calm and balance — the same engineering logic behind MB interior architecture.</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:.3px">MATERIALS &amp; FINISH QUALITY</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.8">As a licensed brand collaboration, MB enforces material and finish quality standards aligned with its automotive tier. Lobbies, corridors, and unit interiors must meet brand-approved specifications — similar to how MB approves every stitch in a licensed product. This means buyers get a quality floor and not just a logo. The <strong style="color:var(--text)">LEED Certification</strong> target reflects MB's corporate sustainability commitment embedded into the physical product.</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:.3px">GLOBAL BRAND = RESALE &amp; RENTAL PREMIUM</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.8">The MB brand is recognized in 195+ countries. An expat from Germany, India, or China who steps into a Mercedes-Benz residence instantly understands the status signal — no translation needed. This generates <strong style="color:var(--text)">premium rental demand</strong> from internationally mobile professionals and <strong style="color:var(--text)">resale liquidity</strong> beyond the typical Dubai investor pool. The Star Beacon — the three-pointed star at monumental scale — creates a landmark that is photographed, shared, and remembered globally.</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:.3px">CITY-SCALE, NOT TOWER-SCALE</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.8">12 towers designed as a <strong style="color:var(--text)">single coherent branded entity</strong> — not 12 separate projects. The Grand Promenade is the social spine: 12 distinct lifestyle and retail experiences curated within the community. Podium edges blur indoor/outdoor with cafés, retail, and lifestyle uses. Residents live in a community that is an experience, not just a building — matching what MB brand buyers expect from the world's most aspirational automotive brand.</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:.3px">WHAT TO SAY TO A BUYER</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.8"><em>"You know how a Mercedes drives differently because of how they engineer every single detail? This community applies the exact same design philosophy to where you live. The acoustic engineering, the surfaces, the smart systems — it's not branding on top of a normal building. It's a different standard of building, shaped by a brand that refuses to be ordinary."</em></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12 TOWER DIRECTORY -->
+    <div style="padding:14px 22px;border-top:1px solid var(--border)">
+      <h4>Complete 12-Tower Directory — MBC Masterplan</h4>
+      <table class="mix-table" style="margin-top:8px">
+        <thead><tr><th>Tower(s)</th><th>Project Name</th><th>Floors</th><th>Units</th><th>Mix</th><th>Plot (sqft)</th><th>Avail.</th></tr></thead>
+        <tbody>
+          <tr><td>T1</td><td><strong>Project Maybach</strong></td><td>B+G+Mez+5P+24F</td><td>816 + 15R</td><td>608 ST · 76 1BR · 92 2BR · 40 3BR</td><td>94,332</td><td style="color:var(--green)"><strong>550</strong></td></tr>
+          <tr><td>T2–T3</td><td><strong>MUL</strong> (Maybach Ult. Luxury)</td><td>B+G+Mez+5P+19F / 25F</td><td>1,204 + 28R</td><td>864 ST · 140 1BR · 140 2BR · 60 3BR</td><td>153,067</td><td style="color:var(--green)"><strong>848</strong></td></tr>
+          <tr><td>T4–T5</td><td><strong>Maybach 6</strong></td><td>B+G+Mez+5P+29F / 34F</td><td>1,844 + 34R</td><td>1,344 ST · 220 1BR · 220 2BR · 60 3BR</td><td>154,203</td><td style="color:var(--green)"><strong>417</strong></td></tr>
+          <tr><td>T6</td><td><strong>Vision Iconic</strong> ⭐</td><td>B+G+Mez+5P+<strong>66F</strong>+9Mech</td><td>1,404 + 21R</td><td>1,001 1BR · 277 2BR · 108 3BR · 9 4BR · 9 5BR</td><td>239,846</td><td style="color:var(--green)"><strong>877</strong></td></tr>
+          <tr><td>T7</td><td><strong>Vision One-Eleven</strong></td><td>B+G+Mez+5P+60F+4Mech</td><td>1,366 + 18R</td><td>1,080 1BR · 236 2BR · 50 3BR (no studios)</td><td>85,047</td><td style="color:var(--amber)">⚠️ TBC</td></tr>
+          <tr><td>T8–T9</td><td><strong>AMG Vision</strong></td><td>B+G+Mez+5P+52F+4Mech / 47F+2Mech</td><td>2,692 + 35R</td><td>1,112 ST · 1,344 1BR · 236 2BR</td><td>125,153</td><td style="color:var(--amber)">⚠️ TBC</td></tr>
+          <tr><td>T10</td><td><strong>Vision AVTR</strong></td><td>B+G+Mez+5P+41F+2Mech</td><td>1,280 + 23R</td><td>640 ST · 480 1BR · 160 2BR</td><td>138,166</td><td style="color:var(--amber)">⚠️ TBC</td></tr>
+          <tr><td>T11–T12</td><td><strong>Vision Simplex</strong></td><td>B+G+Mez+5P+35F+2Mech / 29F+2Mech</td><td>2,208 + 34R</td><td>1,440 ST · 520 1BR · 248 2BR</td><td>122,269</td><td style="color:var(--amber)">⚠️ TBC</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px;font-size:10px;color:var(--muted)">⭐ Vision Iconic (T6) has larger units with terraces + 4BR/5BR duplexes — different product tier from other towers. Total MBC inventory: ~12,814 residential + 208 retail across 12 towers.</div>
+    </div>
+
+    <!-- UNIT SIZES — STANDARD TOWERS -->
+    <div class="card-body" style="border-top:1px solid var(--border)">
+      <div>
+        <h4>Standard Unit Sizes — Towers 1–5, 8–12</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>Suite (sqft)</th><th>Balcony (sqft)</th><th>Total (sqft)</th><th>From (AED)</th></tr></thead>
+          <tbody>
+            <tr><td>Studio</td><td>293</td><td>69–92</td><td>361–385</td><td class="price">1,600,000</td></tr>
+            <tr><td>1 Bedroom</td><td>550–562</td><td>67–71</td><td>617–632</td><td class="price">2,500,000</td></tr>
+            <tr><td>2 Bedroom</td><td>762–772</td><td>208–230</td><td>980–992</td><td class="price">3,200,000</td></tr>
+            <tr><td>3 Bedroom</td><td>1,149–1,180</td><td>135–141</td><td>1,284–1,321</td><td class="price">4,950,000</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:10px;color:var(--muted);margin-top:6px">Vision One-Eleven (T7): same sizes but starts at 1BR — no studios in this tower.</div>
+      </div>
+      <div>
+        <h4>Vision Iconic (T6) — Larger + Terrace Units</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>Suite</th><th>Balcony</th><th>Terrace</th><th>Total</th></tr></thead>
+          <tbody>
+            <tr><td>1 Bedroom</td><td>~623 ft²</td><td>~148 ft²</td><td>—</td><td>~837 ft²</td></tr>
+            <tr><td>2 Bedroom</td><td>618 ft²</td><td>129 ft²</td><td>1,180 ft²</td><td>1,927 ft²</td></tr>
+            <tr><td>3 Bedroom</td><td>822 ft²</td><td>214 ft²</td><td>1,457 ft²</td><td>2,493 ft²</td></tr>
+            <tr><td>4BR Duplex</td><td>1,584 ft²</td><td>258 ft²</td><td>1,180 ft²</td><td>3,022 ft²</td></tr>
+            <tr><td>5BR Duplex</td><td>1,891 ft²</td><td>428 ft²</td><td>1,457 ft²</td><td>3,776 ft²</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:10px;color:var(--amber);margin-top:6px">Vision Iconic is the tallest (66 residential floors) and has the largest units — pricing TBC, expect premium over other MBC towers.</div>
+      </div>
+      <div>
+        <h4>Payment Plan</h4>
+        <div style="font-size:12px;line-height:2;color:var(--muted)">
+          <strong style="color:var(--text)">10% DP</strong> on booking<br>
+          <strong style="color:var(--text)">10%</strong> Feb 2026<br>
+          <strong style="color:var(--text)">50%</strong> during construction<br>
+          <strong style="color:var(--text)">30%</strong> on completion
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:var(--muted)">SC: 18–20 AED/sqft</div>
+        <div class="comm-box" style="margin-top:10px">
+          <div class="rate">5% / 6%</div>
+          <div class="desc">5% up to 2 units · 6% for 3+ same month · 6% full cash</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOCATION + AMENITIES + PITCH -->
+    <div style="padding:14px 22px;border-top:1px solid var(--border)">
+      <h4>Location — Nad Al Sheba Drive Times</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:11px;color:var(--muted);line-height:1.9;margin-bottom:14px">
+        <div>🏇 Meydan Racecourse — <strong style="color:var(--text)">3 min</strong></div>
+        <div>🏬 Dubai Mall — <strong style="color:var(--text)">8 min</strong></div>
+        <div>🗼 Burj Khalifa — <strong style="color:var(--text)">8 min</strong></div>
+        <div>🎭 Dubai Opera — <strong style="color:var(--text)">8 min</strong></div>
+        <div>🏦 Emirates Towers — <strong style="color:var(--text)">9 min</strong></div>
+        <div>🔮 Museum of the Future — <strong style="color:var(--text)">9 min</strong></div>
+        <div>🏢 Dubai World Trade Centre — <strong style="color:var(--text)">10 min</strong></div>
+        <div>⛵ Dubai Harbour &amp; Festival City — <strong style="color:var(--text)">10 min</strong></div>
+        <div>🖼️ Dubai Frame — <strong style="color:var(--text)">12 min</strong></div>
+        <div>🛍️ Mall of the Emirates — <strong style="color:var(--text)">12 min</strong></div>
+        <div>🌊 Burj Al Arab — <strong style="color:var(--text)">15 min</strong></div>
+        <div>✈️ Dubai International Airport — <strong style="color:var(--text)">15 min</strong></div>
+        <div>🏔️ Dubai Hills Mall — <strong style="color:var(--text)">15 min</strong></div>
+        <div>🌴 Palm Jumeirah — <strong style="color:var(--text)">20 min</strong></div>
+      </div>
+      <h4>Amenities (every tower)</h4>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+        <span class="meta-pill">Concierge</span>
+        <span class="meta-pill">Sky Infinity Pool</span>
+        <span class="meta-pill">Private Pool</span>
+        <span class="meta-pill">Podium Pool</span>
+        <span class="meta-pill">Gym</span>
+        <span class="meta-pill">Spa</span>
+        <span class="meta-pill">Yoga &amp; Wellness Outdoor</span>
+        <span class="meta-pill">Entertainment Studios</span>
+        <span class="meta-pill">F&amp;B</span>
+        <span class="meta-pill">Valet</span>
+        <span class="meta-pill">Skyline Jogging Path</span>
+        <span class="meta-pill">Smart System</span>
+        <span class="meta-pill">Acoustic System</span>
+        <span class="meta-pill">Solar PV</span>
+        <span class="meta-pill">LEED Cert (aiming)</span>
+      </div>
+      <div style="background:rgba(201,162,39,.07);border:1px solid rgba(201,162,39,.25);border-radius:8px;padding:11px;margin-bottom:14px">
+        <div style="color:var(--gold);font-size:10px;font-weight:700;letter-spacing:.4px;margin-bottom:7px">📊 AREA DEMAND DRIVERS — MEYDAN / NAD AL SHEBA (VERIFIED)</div>
+        <div style="font-size:10.5px;color:var(--muted);line-height:1.9">
+          <strong style="color:var(--text)">📈 Meydan — fastest appreciating area in Dubai 2025:</strong> +29% full year, +22% Q3 alone (DLD data). Biggest capital appreciation of any Dubai district.<br>
+          <strong style="color:var(--text)">🚇 Gold Line metro — Meydan station confirmed:</strong> HH Sheikh Mohammed announcement 22 Apr 2026, AED 34B, opens 9/9/2032. Nad Al Sheba/Meydan corridor projected +14–18% uplift from metro access (2026 analyst consensus).<br>
+          <strong style="color:var(--text)">🏙️ MBR City / Meydan One — 83,000 residents incoming:</strong> District One West Phase 1 handover 2027, Phase 2 2028. Meydan One Mall 600+ retail businesses. Full resident population arriving over the next 3 years — demand for MB City rental stock locks in from day one.<br>
+          <em style="color:var(--gold)">Buy now at pre-metro, pre-population-peak price — both catalysts already confirmed and dated.</em>
+        </div>
+      </div>
+      <h4>Key Pitch Points</h4>
+      <ul class="pitch-list" style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
+        <li>World's first Mercedes-Benz branded <em>city</em> — 12 towers, one masterplan, globally unique</li>
+        <li>Design language directly from MB's "sensual purity" automotive philosophy — not just a logo</li>
+        <li>Acoustic engineering (MB's quiet cabin tech) + Smart System standard in every unit</li>
+        <li>The Star Beacon landmark — recognized in 195+ countries, drives international buyer demand</li>
+        <li>Grand Promenade: 12 distinct lifestyle experiences within the community</li>
+        <li>Studio entry at AED 1.6M in a branded luxury address — entry-level to global brand</li>
+        <li>Vision Iconic (T6) has 4BR &amp; 5BR duplexes with 1,000+ sqft terraces — rare product</li>
+        <li>Vision One-Eleven (T7) — 60 floors, starts at 1BR, no studios — premium positioning</li>
+        <li>6% commission for 3+ units same month — strong incentive to batch investor deals</li>
+        <li>Binghatti: 80+ projects, AED 80B+ portfolio, vertically integrated — developer you can trust</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- TILAL -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="project-section" id="tilal">
+  <div class="section-title">🏡 Tilal Binghatti — Al Rowaiyah (Academic City)</div>
+  <div class="project-card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <h3>Tilal Binghatti</h3>
+        <div class="card-meta">
+          <span class="meta-pill">📍 Al Rowaiyah · Academic City</span>
+          <span class="meta-pill gold">Q1 2029</span>
+          <span class="meta-pill">60/40 · 10+10% DP</span>
+          <span class="badge badge-offplan">Off-plan</span>
+          <span class="meta-pill">Proj #4471 · G+2</span>
+          <span class="meta-pill">2,400+ homes Phase 1</span>
+        </div>
+        <h4 style="margin-top:10px">Masterplan</h4>
+        <div style="font-size:11px;color:var(--muted);line-height:1.9">
+          Scale: <strong style="color:var(--gold)">621,815+ sqm (≈10M sqft)</strong> — Phase 1 destination masterplan<br>
+          Homes: <strong style="color:var(--text)">2,400+ units</strong> (Phase 1) across 3 clusters<br>
+          Product mix: <strong style="color:var(--text)">4–5BR Villas · 6BR Mansions · Royal Sea Palaces (AIRA REALM)</strong><br>
+          Trees: <strong style="color:var(--text)">20,000+</strong> · Amenities: <strong style="color:var(--text)">50+</strong> · Greenery ratio: best-in-class
+        </div>
+      </div>
+      <div class="card-avail"><div class="num">377</div><div class="lbl">Available</div></div>
+    </div>
+
+    <!-- CLUSTERS -->
+    <div style="padding:14px 22px;border-top:1px solid var(--border)">
+      <h4>Community Clusters</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-top:8px">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px">
+          <div style="color:var(--gold);font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:6px">🌿 TILAL DUNES</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.7">Quieter, family-private cluster. Kids pools, kids clubs, jogging paths, green walkways. Connected to shared community amenities.</div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px">
+          <div style="color:var(--gold);font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:6px">🏖️ TILAL OASIS</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.7">Heart of the community. Central green parks connect directly to Pearl Beach and the Clubhouse. Social hub — connects all clusters.</div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px">
+          <div style="color:var(--gold);font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:6px">👑 AIRA REALM</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.7">Ultra-exclusive Royal Sea Palaces. Central Park + green corridors. 1.6km cycling &amp; jogging track. The premium pinnacle of the masterplan.</div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px">
+          <div style="color:var(--gold);font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:6px">🏝️ TILAL ISLANDS</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.7">6BR twin villas (Islands Mansion). 3,780 sqft · optional private pool · 6 en-suite beds · double-height living. Serene, island-inspired positioning within the masterplan.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIGNATURE WATER + AMENITIES -->
+    <div style="padding:14px 22px;border-top:1px solid var(--border)">
+      <h4>Signature Water Features</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+        <div style="background:rgba(14,119,189,.07);border:1px solid rgba(14,119,189,.2);border-radius:8px;padding:12px">
+          <div style="color:#4ab3e8;font-size:11px;font-weight:700;margin-bottom:4px">THE SUNKEN PEARL — Pearl Beach</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.7"><strong style="color:var(--text)">12,000 sqm (130,000+ sqft)</strong> artificial shore · Wave-generation system · Floating water features · Cabanas · Mood lighting · Sports courts · Jogging track · One of the region's largest private community beaches</div>
+        </div>
+        <div style="background:rgba(14,119,189,.07);border:1px solid rgba(14,119,189,.2);border-radius:8px;padding:12px">
+          <div style="color:#4ab3e8;font-size:11px;font-weight:700;margin-bottom:4px">ALWAHA — Swimmable Lakes</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.7">Second premium water layer. Exclusive swimmable lakes beyond standard lagoon concepts. Adds resident exclusivity and experiential differentiation.</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.7">
+        <strong style="color:var(--text)">50+ amenities:</strong> Retail Boulevard · Clubhouse · Wellness zones · Nursery · Clinics · Mosque · Cluster hubs · Pet parks · Cycling &amp; jogging paths · AIRA Realm Central Park (1.6km track) · Green corridors · Meditation gardens · EV charging · Smart irrigation · Solar lighting
+      </div>
+    </div>
+
+    <!-- UNIT DATA -->
+    <div class="card-body" style="border-top:1px solid var(--border)">
+      <div>
+        <h4>Pricing by Unit Type</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>From (AED)</th><th>BUA sqft</th><th>Plot sqft</th></tr></thead>
+          <tbody>
+            <tr><td>4BR Townhouse (mid)</td><td class="price">4,200,000</td><td>2,784</td><td>1,622</td></tr>
+            <tr><td>5BR Oasis Grand Villa (end unit)</td><td class="price">5,100,000</td><td>2,824</td><td>1,996</td></tr>
+            <tr><td>5BR Townhouse (grand)</td><td class="price">6,250,000</td><td>3,065</td><td>3,430</td></tr>
+            <tr><td>6BR Islands Mansion (twin villa)</td><td class="price">6,900,000</td><td>3,780</td><td>2,828</td></tr>
+            <tr><td>6BR Villa (standalone)</td><td class="price">16,000,000</td><td>6,919</td><td>5,167</td></tr>
+            <tr><td>7BR Villa</td><td class="price">49,000,000</td><td>10,602</td><td>9,346</td></tr>
+            <tr><td>Mansion</td><td class="price">150,000,000</td><td>23,895</td><td>39,434</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:8px;font-size:10px;color:var(--muted);line-height:1.9">
+          <strong style="color:var(--text)">4BR Townhouse Mid Unit (Tilal Dunes):</strong> GF 844 · 1F 862 · 2F 1,067 = <strong style="color:var(--text)">2,773 sqft (257.62 sqm)</strong><br>
+          <strong style="color:var(--text)">5BR Oasis Grand Villa End Unit (Tilal Oasis):</strong> GF 853 · 1F 882 · 2F 1,088 = <strong style="color:var(--text)">2,824 sqft (262.37 sqm)</strong><br>
+          <strong style="color:var(--text)">6BR Islands Mansion Twin Villa (Tilal Islands):</strong> GF 1,272 · 1F 1,262 · 2F 1,245 = <strong style="color:var(--text)">3,780 sqft (351.16 sqm)</strong> · Optional private pool · 6 en-suite beds
+        </div>
+      </div>
+      <div>
+        <h4>Unit Mix (1,432 current inventory)</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>Count</th></tr></thead>
+          <tbody>
+            <tr><td>4BR Townhouse (mid)</td><td class="count">712</td></tr>
+            <tr><td>5BR Oasis Grand Villa (end/corner)</td><td class="count">252</td></tr>
+            <tr><td>5BR Townhouse (grand)</td><td class="count">140</td></tr>
+            <tr><td>6BR Villa (twin/detached)</td><td class="count">246</td></tr>
+            <tr><td>6BR Villa (standalone)</td><td class="count">73</td></tr>
+            <tr><td>7BR Villa</td><td class="count">8</td></tr>
+            <tr><td>Mansion</td><td class="count">1</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:6px;font-size:10px;color:var(--amber)">Phase 1 masterplan = 2,400+ homes. 1,432 reflects current Excel inventory release.</div>
+      </div>
+      <div>
+        <h4>Payment Plan</h4>
+        <div style="font-size:12px;line-height:2;color:var(--muted)">
+          <strong style="color:var(--text)">10% DP</strong> on booking<br>
+          <strong style="color:var(--text)">10%</strong> second instalment<br>
+          <strong style="color:var(--text)">40%</strong> during construction<br>
+          <strong style="color:var(--text)">40%</strong> on completion
+        </div>
+        <div style="margin-top:8px;padding:8px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);border-radius:6px;font-size:11px;color:var(--green)">
+          🇦🇪 UAE Nationals: 50/50 with 5%+5% DP
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:var(--muted)">SC: ≈3.5–4.0 AED/sqft — lowest in portfolio</div>
+        <div class="comm-box" style="margin-top:10px">
+          <div class="rate">Standard Villa %</div>
+          <div class="desc">⚠️ Exact % — confirm with team</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VILLA SPECS -->
+    <div style="padding:14px 22px;border-top:1px solid var(--border)">
+      <h4>Villa Design Specs — vs Market</h4>
+      <table class="mix-table">
+        <thead><tr><th>Feature</th><th style="color:var(--gold)">Tilal Binghatti</th><th>Market Standard</th></tr></thead>
+        <tbody>
+          <tr><td>Private pool</td><td class="price" style="color:var(--green)">4.5M × 10M × 1.5M resort</td><td style="color:var(--muted)">Smaller plunge/decorative</td></tr>
+          <tr><td>Floor-to-ceiling height</td><td class="price" style="color:var(--green)">4 metres</td><td style="color:var(--muted)">Lower standard</td></tr>
+          <tr><td>Double-height living</td><td class="price" style="color:var(--green)">8 metres</td><td style="color:var(--muted)">Conventional volumes</td></tr>
+          <tr><td>Rear privacy setback</td><td class="price" style="color:var(--green)">10M between villas</td><td style="color:var(--muted)">5–8M typical</td></tr>
+          <tr><td>Landscaping delivery</td><td class="price" style="color:var(--green)">Grass-delivered, ready</td><td style="color:var(--muted)">Sandy/owner-finished</td></tr>
+          <tr><td>Included features</td><td class="price" style="color:var(--green)">Lift · gym · smart home · grand staircase · semi-furnished</td><td style="color:var(--muted)">More conventional specs</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- INTERIOR FINISHES -->
+    <div style="padding:14px 22px;border-top:1px solid var(--border)">
+      <h4>Interior Finishes Palette</h4>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
+        <span class="meta-pill">Wallcovering</span>
+        <span class="meta-pill">Concave Light Oak Wood Veneer</span>
+        <span class="meta-pill">Arbescato Orobico Marble</span>
+        <span class="meta-pill">Fluted Arbescato Orobico Marble</span>
+        <span class="meta-pill">White Limestone Ceramic Tile</span>
+        <span class="meta-pill">Champagne Hairline Metal</span>
+        <span class="meta-pill">White Travertine Marble</span>
+        <span class="meta-pill">Light Oak Wood Veneer</span>
+        <span class="meta-pill">Leather</span>
+        <span class="meta-pill">Tinted Bronze Mirror</span>
+      </div>
+    </div>
+
+    <!-- LOCATION + PITCH -->
+    <div style="padding:14px 22px;border-top:1px solid var(--border)">
+      <h4>Location — Drive Times</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--muted);line-height:1.8;margin-bottom:14px">
+        <div>🏇 Meydan Racecourse — <strong style="color:var(--text)">10 min</strong></div>
+        <div>🏙️ Dubai Creek Harbour — <strong style="color:var(--text)">15 min</strong></div>
+        <div>🗼 Burj Khalifa &amp; Dubai Mall — <strong style="color:var(--text)">17 min</strong></div>
+        <div>✈️ DXB International Airport — <strong style="color:var(--text)">18 min</strong></div>
+        <div>🔮 Museum of the Future — <strong style="color:var(--text)">20 min</strong></div>
+        <div>🌴 Palm Jumeirah — <strong style="color:var(--text)">35 min</strong></div>
+      </div>
+      <div style="background:rgba(201,162,39,.07);border:1px solid rgba(201,162,39,.25);border-radius:8px;padding:11px;margin-bottom:14px">
+        <div style="color:var(--gold);font-size:10px;font-weight:700;letter-spacing:.4px;margin-bottom:7px">📊 AREA DEMAND DRIVERS — ACADEMIC CITY / DSO (VERIFIED GOVERNMENT SOURCES)</div>
+        <div style="font-size:10.5px;color:var(--muted);line-height:1.9">
+          <strong style="color:var(--text)">🏗️ District IO — AED 12.8B, HH Sheikh Mohammed (Jan 2026):</strong> Dubai Silicon Oasis (adjacent to Academic City) expanded with District IO — 25 buildings, 6,500+ global companies, <strong style="color:var(--text)">70,000 direct &amp; indirect jobs</strong> over 10 years. Sectors: AI, Robotics, Web3, Quantum Computing, Smart Mobility. Phase 1 starting 2026. AED 103B projected GDP contribution. DSO already has 60,000+ talents today.<br>
+          <strong style="color:var(--text)">🚇 Blue Line Metro — Academic City / DSO on route:</strong> Under construction (groundbreaking Jun 2025, 10% complete Nov 2025). Opens 9/9/2029. First-ever metro access for the corridor. All 70,000+ incoming workers will need housing nearby — supply is extremely limited.<br>
+          <strong style="color:var(--text)">🎓 Academic City 15% student growth (2025):</strong> 38,500+ students, 27+ universities (Dubai Media Office, Jan 2026). Faculty + international students = steady year-round housing demand. Tilal is the only villa community near the campus.<br>
+          <em style="color:var(--gold)">Buy pre-District IO, pre-metro → demand surges 2026–2029 as workers and students arrive. Villa supply is fixed; Tilal is the product they'll compete for.</em>
+        </div>
+      </div>
+      <h4>Key Pitch Points</h4>
+      <ul class="pitch-list" style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
+        <li>Binghatti's first ground-up masterplan — 621,815 sqm / 10M sqft destination, not a tower</li>
+        <li>Pearl Beach with wave-generation system — beachfront lifestyle 18 min from airport</li>
+        <li>Three distinct clusters (Dunes · Oasis · AIRA Realm) — product for every buyer profile</li>
+        <li>AIRA Realm Royal Sea Palaces — ultra-exclusive tier above mansions, globally rare</li>
+        <li>4M ceilings · 8M double-height · 10M privacy setback — villa specs exceed all competitors</li>
+        <li>Resort pools (4.5×10×1.5M) delivered with every villa — not an upgrade</li>
+        <li>Entry at AED 4.2M for 4BR — ground-floor access to a globally marketed masterplan</li>
+        <li>50+ amenities · 20,000+ trees · Blue Line Metro 2029 — self-sufficient community</li>
+        <li>SC only 3.5–4 AED/sqft — lowest in Binghatti portfolio</li>
+        <li>Grass-delivered landscaped villas — move-in ready, no owner finishing burden</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SKY TERRACES -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="project-section" id="sky-terraces">
+  <div class="section-title">🏗️ Sky Terraces — Motor City</div>
+  <div class="project-card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <h3>Binghatti Sky Terraces</h3>
+        <div class="card-meta">
+          <span class="meta-pill">📍 Motor City</span>
+          <span class="meta-pill gold">Dec 2027</span>
+          <span class="meta-pill">70/30 · 20% DP</span>
+          <span class="badge badge-offplan">Off-plan</span>
+          <span class="meta-pill">2B + G + 6P + 40F + 2M + Roof</span>
+          <span class="meta-pill">1,840 + 26R units</span>
+        </div>
+        <h4 style="margin-top:10px">Building Facts</h4>
+        <div style="font-size:11px;color:var(--muted);line-height:1.9">
+          Structure: <strong style="color:var(--text)">2B + G + 6 Podium + 40 Residential Floors + 2 Mechanical + Roof</strong><br>
+          Plot: <strong style="color:var(--text)">11,809.00 sqm / 127,110.90 sqft</strong><br>
+          Total units: <strong style="color:var(--text)">1,840 residential + 26 ground-floor retail</strong><br>
+          Design: <strong style="color:var(--gold)">Undulating facade — signature deep, expansive terraces on every floor; blurring indoor/outdoor living</strong>
+        </div>
+      </div>
+      <div class="card-avail"><div class="num">303</div><div class="lbl">Available</div></div>
+    </div>
+    <div class="card-body">
+      <div>
+        <h4>Pricing & Sizes</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>Count</th><th>From (AED)</th><th>Layouts</th><th>Size (sqft)</th></tr></thead>
+          <tbody>
+            <tr><td>Studio</td><td>643</td><td class="price">774,999</td><td>8</td><td>360–508</td></tr>
+            <tr><td>1 Bedroom</td><td>1,035</td><td class="price">1,199,999</td><td>8</td><td>636–907</td></tr>
+            <tr><td>1BR Royal Suite</td><td>—</td><td class="price">1,599,999</td><td>—</td><td>1,261–1,277</td></tr>
+            <tr><td>2 Bedroom</td><td>156</td><td class="price">1,889,999</td><td>7</td><td>1,051–2,001</td></tr>
+            <tr><td>3 Bedroom</td><td>6</td><td class="price">2,924,999</td><td>1</td><td>2,726</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:10px;color:var(--muted);margin-top:6px">Pricing from Excel inventory. Floor plan sizes from brochure (Tower A &amp; B).</div>
+
+        <details class="layout-detail">
+          <summary>Studio — 8 layouts (360–508 sqft)</summary>
+          <table class="layout-table">
+            <thead><tr><th>Layout</th><th>Suite</th><th>Balcony</th><th>Total</th></tr></thead>
+            <tbody>
+              <tr><td>Tower A · ST-01</td><td>308</td><td>81</td><td>388</td></tr>
+              <tr><td>Tower A · ST-02</td><td>310</td><td>198</td><td><strong>508</strong> <span class="lt-note">large balcony</span></td></tr>
+              <tr><td>Tower A · ST-03</td><td>308</td><td>180</td><td>488</td></tr>
+              <tr><td>Tower A · ST-04</td><td>308</td><td>68</td><td>377</td></tr>
+              <tr><td>Tower B · ST-01</td><td>331</td><td>151</td><td>482</td></tr>
+              <tr><td>Tower B · ST-02</td><td>304</td><td>76</td><td>379</td></tr>
+              <tr><td>Tower B · ST-03</td><td>298</td><td>63</td><td><strong>360</strong> <span class="lt-note">smallest</span></td></tr>
+              <tr><td>Tower B · ST-04</td><td>303</td><td>137</td><td>440</td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <details class="layout-detail">
+          <summary>1 Bedroom — 8 layouts (636–907 sqft)</summary>
+          <table class="layout-table">
+            <thead><tr><th>Layout</th><th>Suite</th><th>Balcony</th><th>Total</th></tr></thead>
+            <tbody>
+              <tr><td>Tower A · 1BR-01</td><td>569</td><td>153</td><td>723</td></tr>
+              <tr><td>Tower A · 1BR-02</td><td>567</td><td>70</td><td><strong>636</strong> <span class="lt-note">smallest</span></td></tr>
+              <tr><td>Tower A · 1BR-03</td><td>581</td><td>231</td><td>812 <span class="lt-note">large balcony</span></td></tr>
+              <tr><td>Tower A · 1BR-04</td><td>580</td><td>231</td><td>811</td></tr>
+              <tr><td>Tower B · 1BR-01</td><td>542</td><td>167</td><td>710</td></tr>
+              <tr><td>Tower B · 1BR-02</td><td>542</td><td>167</td><td>710</td></tr>
+              <tr><td>Tower B · 1BR-03</td><td>628</td><td>279</td><td><strong>907</strong> <span class="lt-note">largest terrace</span></td></tr>
+              <tr><td>Tower B · 1BR-04</td><td>~629</td><td>~104</td><td>~733</td></tr>
+            </tbody>
+          </table>
+          <div style="font-size:9.5px;color:var(--muted);margin:4px 0">Royal Suite (1,261–1,277 sqft) not in brochure FPs — confirm unit count with team.</div>
+        </details>
+
+        <details class="layout-detail">
+          <summary>2 Bedroom — 7 layouts (1,051–2,001 sqft)</summary>
+          <table class="layout-table">
+            <thead><tr><th>Layout</th><th>Suite</th><th>Balcony / Terrace</th><th>Total</th></tr></thead>
+            <tbody>
+              <tr><td>Tower A · 2BR-01</td><td>1,011</td><td>252</td><td>1,263</td></tr>
+              <tr><td>Tower A · 2BR-02</td><td>1,213</td><td>788</td><td><strong>2,001</strong> <span class="lt-pool">★ PRIVATE TERRACE</span></td></tr>
+              <tr><td>Tower A · 2BR-03</td><td>~788</td><td>~325</td><td>~1,113</td></tr>
+              <tr><td>Tower B · 2BR-01</td><td>787</td><td>269</td><td><strong>1,051</strong> <span class="lt-note">smallest</span></td></tr>
+              <tr><td>Tower B · 2BR-02</td><td>1,212</td><td>788</td><td><strong>2,000</strong> <span class="lt-pool">★ PRIVATE TERRACE</span></td></tr>
+              <tr><td>Tower B · 2BR-03</td><td>1,027</td><td>252</td><td>1,279</td></tr>
+              <tr><td>Tower B · 2BR-04</td><td>788</td><td>325</td><td>1,113</td></tr>
+            </tbody>
+          </table>
+          <div style="font-size:9.5px;color:#64b4ff;margin:4px 0">★ 2 private-terrace units (~2,000 sqft) — resort-suite outdoor living at 2BR pricing.</div>
+        </details>
+
+        <details class="layout-detail">
+          <summary>3 Bedroom — 1 layout · only 6 units total</summary>
+          <table class="layout-table">
+            <thead><tr><th>Layout</th><th>Suite</th><th>Private Terrace</th><th>Total</th></tr></thead>
+            <tbody>
+              <tr><td>Tower A · 3BR-01</td><td>1,141</td><td>1,584</td><td><strong>2,726</strong></td></tr>
+            </tbody>
+          </table>
+          <div style="font-size:9.5px;color:var(--gold);margin:4px 0">Ultra-rare Motor City 3BR — 6 units only. Private terrace 1,584 sqft of outdoor space.</div>
+        </details>
+
+        <div class="fact-grid" style="margin-top:10px">
+          <div class="fact-row"><span class="fact-label">SC</span><span class="fact-value">≈16 AED/sqft</span></div>
+          <div class="fact-row"><span class="fact-label">Commission</span><span class="fact-value">⚠️ TBC — confirm with team</span></div>
+          <div class="fact-row"><span class="fact-label">Payment plan</span><span class="fact-value">70/30 · 20% DP on booking</span></div>
+          <div class="fact-row"><span class="fact-label">Completion</span><span class="fact-value">Dec 2027</span></div>
+        </div>
+      </div>
+      <div>
+        <h4>Amenities</h4>
+        <div class="chip-row" style="margin-top:6px">
+          <span class="chip">Adult Pool &amp; Shallow Water Pool</span>
+          <span class="chip">Kids Pool &amp; Water Splash</span>
+          <span class="chip">Family Sitting Zone</span>
+          <span class="chip">Padel Court</span>
+          <span class="chip">Indoor Gym</span>
+          <span class="chip">Jogging Track</span>
+          <span class="chip">Kids Play Area</span>
+          <span class="chip">Green Terraces</span>
+          <span class="chip">Yoga Area</span>
+        </div>
+        <h4 style="margin-top:16px">Material Palette</h4>
+        <div class="chip-row" style="margin-top:6px">
+          <span class="chip">Feature Marble</span>
+          <span class="chip">Travertine</span>
+          <span class="chip">European Walnut</span>
+          <span class="chip">Chrome Metal</span>
+          <span class="chip">Bronze Metal</span>
+          <span class="chip">Corian</span>
+          <span class="chip">Textured Paint</span>
+          <span class="chip">White Paint</span>
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-top:8px">Stone, glass and bespoke materials. Smart home technology standard in all units.</div>
+      </div>
+      <div>
+        <h4>Location — Motor City Drive Times</h4>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Motor City — consistently ranked top residential community for quality of life</div>
+        <table class="mix-table">
+          <thead><tr><th>Destination</th><th>Time</th></tr></thead>
+          <tbody>
+            <tr><td>Dubai Autodrome</td><td>5 min</td></tr>
+            <tr><td>Meydan Hotel &amp; Race Course</td><td>5 min</td></tr>
+            <tr><td>Miracle &amp; Butterfly Garden</td><td>8 min</td></tr>
+            <tr><td>Global Village</td><td>12 min</td></tr>
+            <tr><td>Expo City Dubai</td><td>15 min</td></tr>
+            <tr><td>Dubai International Airport (DXB)</td><td>18 min</td></tr>
+            <tr><td>Burj Al Arab &amp; Jumeirah Beach</td><td>18 min</td></tr>
+            <tr><td>Burj Khalifa &amp; Dubai Mall</td><td>20 min</td></tr>
+            <tr><td>Museum of the Future</td><td>20 min</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:14px;background:rgba(201,162,39,.08);border:1px solid rgba(201,162,39,.28);border-radius:8px;padding:12px">
+          <div style="color:var(--gold);font-size:10.5px;font-weight:700;letter-spacing:.4px;margin-bottom:8px">🚇 METRO GOLD LINE — CONFIRMED 2032</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.9">
+            <strong style="color:var(--text)">NOW:</strong> Motor City has zero metro access — priced lower than metro-connected equivalents.<br>
+            <strong style="color:var(--text)">COMING:</strong> Gold Line announced 22 Apr 2026 by HH Sheikh Mohammed bin Rashid · AED 34 billion · 42 km fully underground · 18 stations · opens <strong style="color:var(--text)">9 September 2032</strong><br>
+            <strong style="color:var(--text)">Motor City / Dubai Production City confirmed on route</strong> — city's first-ever metro access<br>
+            Connects: Business Bay · Meydan · Al Barsha South · JVC · Al Ghubaiba (Green Line interchange)
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--gold);font-weight:600">Buy pre-metro today (Dec 2027 handover) → Gold Line opens 2032 → rental demand reprices + capital value uplift locked in.</div>
+        </div>
+      </div>
+      <div>
+        <h4>Key Pitch Points</h4>
+        <ul class="pitch-list">
+          <li><strong style="color:var(--gold)">Gold Line metro arriving 2032</strong> — Motor City confirmed on the AED 34B fully underground Gold Line (announced HH Sheikh Mohammed, 22 Apr 2026, opens 9/9/2032); Motor City's first-ever metro station · currently zero metro access means today's price is still pre-connectivity · buy now, benefit as the line opens</li>
+          <li>First Binghatti tower in Motor City — scarcity play in a fully established, mature community</li>
+          <li>Undulating facade = every unit gets a deep private terrace — outdoor living is the design intent, not an afterthought</li>
+          <li>Studio entry at AED 774,999 — lowest Binghatti entry in a high-demand, family-oriented area</li>
+          <li>1BR Royal Suite (1,261–1,277 sqft) at 1.6M — delivers 2BR space at 1BR pricing</li>
+          <li>3BR at 2,526 sqft (Tower A: 1,141 suite + 1,584 private terrace) — only 6 units, ultra-rare for family buyers in Motor City</li>
+          <li>Kids Pool, Padel Court, Green Terraces, Yoga Area — full family amenity stack</li>
+          <li>5 min to Dubai Autodrome + Miracle Garden — lifestyle draws for families and community residents</li>
+          <li>Smart homes + curated marble/walnut/Corian finishes throughout</li>
+          <li>Motor City consistently ranked top residential community — strong rental and end-user demand</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SKYFLAME 1 & 2 -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="project-section" id="skyflame">
+  <div class="section-title">🔥 Skyflame 1 & 2 — Majan</div>
+  <div class="project-card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <h3>Binghatti Skyflame 1 & 2</h3>
+        <div class="card-meta">
+          <span class="meta-pill">📍 Majan</span>
+          <span class="meta-pill gold">Dec 2027</span>
+          <span class="meta-pill">70/30 std · 60/40 promo*</span>
+          <span class="badge badge-offplan">Off-plan</span>
+        </div>
+      </div>
+      <div class="card-avail"><div class="num">334</div><div class="lbl">Combined avail.</div></div>
+    </div>
+    <div class="card-body">
+      <div>
+        <h4>Pricing & Sizes (both towers)</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>From (AED)</th><th>Size (sqft)</th></tr></thead>
+          <tbody>
+            <tr><td>Studio</td><td class="price">699,999</td><td>401–608</td></tr>
+            <tr><td>1 Bedroom</td><td class="price">1,099,999</td><td>689–1,343</td></tr>
+            <tr><td>2 Bedroom</td><td class="price">1,649,999</td><td>1,210–1,257</td></tr>
+            <tr><td>2BR + Pool</td><td class="price">1,774,999</td><td>2,112–2,235</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h4>Unit Mix</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>T1 (4393)</th><th>T2 (4399)</th></tr></thead>
+          <tbody>
+            <tr><td>Studio</td><td class="count">741</td><td class="count">406</td></tr>
+            <tr><td>1 Bedroom</td><td class="count">584</td><td class="count">332</td></tr>
+            <tr><td>2 Bedroom</td><td class="count">52</td><td class="count">44</td></tr>
+            <tr><td>4BR</td><td class="count">1</td><td class="count">—</td></tr>
+            <tr><td>Retail</td><td class="count">29</td><td class="count">19</td></tr>
+            <tr><td><strong>Total</strong></td><td class="count"><strong>1,378</strong></td><td class="count"><strong>782</strong></td></tr>
+            <tr><td><strong>Available</strong></td><td class="count"><strong style="color:var(--green)">73</strong></td><td class="count"><strong style="color:var(--green)">261</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h4>Payment Plans</h4>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:10px">
+          <strong style="color:var(--text)">Standard 70/30:</strong> 20% DP · 50% construction · 30% completion<br>
+          <strong style="color:var(--text)">Promo* 60/40:</strong> 10% DP · 50% construction · 40% completion
+        </div>
+        <div style="font-size:11px;color:var(--amber)">*60/40 promo is temporary — check current validity</div>
+        <div style="margin-top:8px;font-size:11px;color:var(--muted)">SC: ≈12–14 AED/sqft</div>
+        <div class="comm-box" style="margin-top:10px">
+          <div class="rate">5% / 6%</div>
+          <div class="desc">5% on 1 unit · 6% for cash purchase</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- MERCEDES-BENZ PLACES | DOWNTOWN -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="project-section" id="mbp-downtown">
+  <div class="section-title">🌟 Mercedes-Benz Places | Binghatti — Downtown Dubai</div>
+  <div class="project-card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <h3>Mercedes-Benz Places | Binghatti</h3>
+        <div class="card-meta">
+          <span class="meta-pill">📍 Downtown Dubai</span>
+          <span class="meta-pill gold">Handover ⚠️ TBC</span>
+          <span class="meta-pill">341M — Hyper-Tower</span>
+          <span class="meta-pill">150 units</span>
+        </div>
+        <h4>Building Specs</h4>
+        <div style="font-size:11px;color:var(--muted);line-height:1.9">
+          Structure: <strong style="color:var(--text)">3B + G + 5P + 65 Floors</strong><br>
+          Total height: <strong style="color:var(--gold)">341 metres</strong><br>
+          Residential floors: <strong style="color:var(--text)">51</strong> &nbsp;|&nbsp; Mechanical floors: <strong style="color:var(--text)">6</strong><br>
+          Amenity floors: <strong style="color:var(--text)">3 + HC + Sky Infinity Pool</strong><br>
+          Ceiling height: <strong style="color:var(--text)">4.2m</strong> slab to slab<br>
+          Ownership: <strong style="color:var(--text)">Freehold</strong> &nbsp;|&nbsp; Furnished & Unfurnished options
+        </div>
+      </div>
+      <div>
+        <h4>Fast Facts</h4>
+        <div class="fact-grid">
+          <div class="fact-row"><span class="fact-label">Location</span><span class="fact-value">Downtown Dubai</span></div>
+          <div class="fact-row"><span class="fact-label">Total units</span><span class="fact-value">150</span></div>
+          <div class="fact-row"><span class="fact-label">Building height</span><span class="fact-value">341 M</span></div>
+          <div class="fact-row"><span class="fact-label">Floors</span><span class="fact-value">3B+G+5P+65F</span></div>
+          <div class="fact-row"><span class="fact-label">Ceiling height</span><span class="fact-value">4.2m slab-slab</span></div>
+          <div class="fact-row"><span class="fact-label">Ownership</span><span class="fact-value">Freehold</span></div>
+          <div class="fact-row"><span class="fact-label">Commission</span><span class="fact-value">⚠️ TBC</span></div>
+          <div class="fact-row"><span class="fact-label">Payment plan</span><span class="fact-value">⚠️ TBC</span></div>
+          <div class="fact-row"><span class="fact-label">Starting price</span><span class="fact-value">⚠️ TBC</span></div>
+          <div class="fact-row"><span class="fact-label">Handover</span><span class="fact-value">⚠️ TBC</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body" style="border-top:1px solid var(--border)">
+      <div>
+        <h4>Suite Levels (12–52) — Suites</h4>
+        <table class="mix-table">
+          <thead><tr><th>Suite Name</th><th>Type</th><th>Units</th><th>Levels</th><th>Area (sqft)</th></tr></thead>
+          <tbody>
+            <tr><td><em>Pagoda Suite</em></td><td>2 Bedroom Type 1</td><td class="count">80 total</td><td>12–31</td><td>1,837</td></tr>
+            <tr><td><em>Pagoda Suite</em></td><td>2 Bedroom Type 2</td><td class="count">—</td><td>12–31</td><td>2,534</td></tr>
+            <tr><td><em>Grand Mercedes Suite</em></td><td>3 Bedroom Type 1</td><td class="count">57 total</td><td>34–52</td><td>2,620–2,710</td></tr>
+            <tr><td><em>Grand Mercedes Suite</em></td><td>3 Bedroom Type 2</td><td class="count">—</td><td>34–52</td><td>3,178–3,285</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h4>Penthouses (Levels 55–66)</h4>
+        <table class="mix-table">
+          <thead><tr><th>Penthouse Name</th><th>Type</th><th>Units</th><th>Levels</th><th>Area (sqft)</th></tr></thead>
+          <tbody>
+            <tr><td><em>Vision One-Eleven</em></td><td>4BR Penthouse</td><td class="count">8</td><td>55–58</td><td>3,662–4,007</td></tr>
+            <tr><td><em>Gullwing</em></td><td>5BR Penthouse A/B/C</td><td class="count">3</td><td>59–61</td><td>6,578–7,182</td></tr>
+            <tr><td><em>Vision EQ Silver Arrow</em></td><td>5BR Duplex PH</td><td class="count">1</td><td>62–63</td><td>12,475</td></tr>
+            <tr><td><em>Uhlenhaut Coupé</em></td><td>6BR Triplex PH</td><td class="count">1</td><td>64–66</td><td>18,101</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:10px;color:var(--muted);margin-top:6px">Total: 80 + 57 + 8 + 3 + 1 + 1 = <strong style="color:var(--text)">150 units</strong></div>
+      </div>
+    </div>
+
+    <div style="padding:14px 22px;border-top:1px solid var(--border)">
+      <h4>Amenities & Services</h4>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+        <span class="meta-pill">Concierge</span>
+        <span class="meta-pill">Sky Infinity Pool</span>
+        <span class="meta-pill">Private Pool</span>
+        <span class="meta-pill">Podium Pool</span>
+        <span class="meta-pill">Housekeeping</span>
+        <span class="meta-pill">Gym</span>
+        <span class="meta-pill">F&amp;B</span>
+        <span class="meta-pill">Spa</span>
+        <span class="meta-pill">Valet</span>
+        <span class="meta-pill">PH Private Parking</span>
+        <span class="meta-pill">Smart System</span>
+        <span class="meta-pill">Acoustic System</span>
+        <span class="meta-pill">LEED Cert (aiming)</span>
+        <span class="meta-pill">Solar PV</span>
+      </div>
+      <h4>Location — What's Nearby</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--muted);line-height:1.8">
+        <div>🏬 Dubai Mall — <strong style="color:var(--text)">3 min</strong></div>
+        <div>⛲ Dubai Fountain — <strong style="color:var(--text)">3 min</strong></div>
+        <div>🗿 Wings of Mexico Statue — <strong style="color:var(--text)">3 min</strong></div>
+        <div>🏟️ DIFC Arena — <strong style="color:var(--text)">6 min</strong></div>
+        <div>🔮 Museum of the Future — <strong style="color:var(--text)">6 min</strong></div>
+        <div>🎵 Coca-Cola Arena — <strong style="color:var(--text)">7 min</strong></div>
+        <div>🎭 Dubai Opera — walking distance</div>
+        <div>🏦 Emirates Towers — nearby</div>
+      </div>
+      <h4 style="margin-top:14px">Key Pitch Points</h4>
+      <ul class="pitch-list" style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
+        <li>World's first Mercedes-Benz branded hyper-tower — 341M, one of the tallest in Downtown Dubai</li>
+        <li>Only 150 units total — extreme scarcity; penthouse allocation is 13 units only</li>
+        <li>Each suite and penthouse named after iconic Mercedes-Benz models (Pagoda, Gullwing, Uhlenhaut)</li>
+        <li>4.2m ceiling height across all floors — ultra-premium living volume</li>
+        <li>3-bed from level 34+ — every unit above 34 has panoramic Downtown + Burj Khalifa sightlines</li>
+        <li>UHNW buyer profile — same segment as Jacob & Co and Bugatti Residences</li>
+        <li>Sky Infinity Pool + Private Pools (penthouses) — lifestyle as a spec, not an extra</li>
+        <li>Freehold — eligible for Golden Visa (price point almost certainly qualifies)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- AQUARISE -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="project-section" id="aquarise">
+  <div class="section-title">💧 Aquarise — Business Bay</div>
+  <div class="project-card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <h3>Binghatti Aquarise</h3>
+        <div class="card-meta">
+          <span class="meta-pill">📍 Business Bay</span>
+          <span class="meta-pill gold">Mar 2027</span>
+          <span class="meta-pill">70/30</span>
+          <span class="badge badge-offplan">Off-plan</span>
+          <span class="meta-pill">3B + G + Mez + 25F + Roof</span>
+          <span class="meta-pill">1,598 + 28R units</span>
+        </div>
+        <h4 style="margin-top:10px">Building Facts</h4>
+        <div style="font-size:11px;color:var(--muted);line-height:1.9">
+          Structure: <strong style="color:var(--text)">3B + G + Mezzanine + 25 Residential Floors + Mechanical + Roof</strong><br>
+          Plot: <strong style="color:var(--text)">21,589.98 sqm / 232,392.38 sqft</strong><br>
+          Total units: <strong style="color:var(--text)">1,598 residential + 28 ground-floor retail</strong><br>
+          Concept: <strong style="color:var(--gold)">"Like a wave, it rises" — curated collection designed around replenishment and resort lifestyle</strong>
+        </div>
+      </div>
+      <div class="card-avail"><div class="num">167</div><div class="lbl">Available</div></div>
+    </div>
+    <div class="card-body">
+      <div>
+        <h4>Unit Mix & Floor Plan Sizes</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>Count</th><th>Types</th><th>Suite (sqft)</th><th>Balcony (sqft)</th><th>Total (sqft)</th><th>From (AED)</th><th>AED/sqft</th></tr></thead>
+          <tbody>
+            <tr><td>Studio</td><td>688</td><td>13</td><td>344–405</td><td>79–167</td><td>424–550</td><td colspan="2" style="color:var(--amber);font-weight:600;text-align:center">SOLD OUT</td></tr>
+            <tr><td>1 Bedroom</td><td>736</td><td>13</td><td>556–687</td><td>144–379</td><td>714–1,022</td><td class="price">1,880,000</td><td style="color:var(--gold);font-weight:600">~2,382</td></tr>
+            <tr><td>2 Bedroom (std)</td><td rowspan="2">152</td><td>12</td><td>687–1,189</td><td>170–1,970</td><td>857–3,128 ★</td><td class="price">~2,571,000</td><td style="color:var(--gold);font-weight:600">~2,357</td></tr>
+            <tr><td>2 Bedroom (Island)</td><td>3</td><td>1,083–1,269</td><td>243–814</td><td>1,326–2,083</td><td class="price" style="color:var(--amber)">TBC</td><td style="color:var(--muted)">—</td></tr>
+            <tr><td>3 Bedroom (std)</td><td rowspan="2">10</td><td>7</td><td>1,524–1,989</td><td>427–2,033</td><td>1,952–3,904</td><td class="price" style="color:var(--amber)">TBC</td><td style="color:var(--muted)">—</td></tr>
+            <tr><td>3 Bedroom (Island)</td><td>2</td><td>1,526–1,813</td><td>670–904</td><td>2,196–2,718</td><td class="price" style="color:var(--amber)">TBC</td><td style="color:var(--muted)">—</td></tr>
+            <tr><td>4 Bedroom (Island)</td><td>12</td><td>2</td><td>1,793–2,018</td><td>592–700</td><td>2,385–2,718</td><td class="price" style="color:var(--amber)">TBC</td><td style="color:var(--muted)">—</td></tr>
+            <tr><td><strong>Total</strong></td><td><strong>1,598 + 28R</strong></td><td colspan="6"></td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:10px;color:var(--amber);margin-top:4px">⚠️ 1BR confirmed AED 1.88M from floor 1 · 2BR approx from AED 2.57M (10 Jul 2026). 3BR / 4BR / Island pricing TBC — confirm before pitching.</div>
+        <details class="layout-detail"><summary>Studio — 13 layouts · 424–550 sqft total</summary><table class="layout-table"><thead><tr><th>Layout</th><th>Suite (ft²)</th><th>Balcony (ft²)</th><th>Total (ft²)</th><th></th></tr></thead><tbody>
+          <tr><td>ST-01</td><td>361</td><td>107</td><td>468</td><td></td></tr>
+          <tr><td>ST-02</td><td>351</td><td>83</td><td>435</td><td></td></tr>
+          <tr><td>ST-03</td><td>358</td><td>83</td><td>441</td><td></td></tr>
+          <tr><td>ST-04</td><td>351</td><td>83</td><td>435</td><td></td></tr>
+          <tr><td>ST-05</td><td>352</td><td>96</td><td>448</td><td></td></tr>
+          <tr><td>ST-06</td><td>375</td><td>96</td><td>471</td><td></td></tr>
+          <tr><td>ST-07</td><td>352</td><td>96</td><td>448</td><td></td></tr>
+          <tr><td>ST-08</td><td>347</td><td>79</td><td>426</td><td></td></tr>
+          <tr><td>ST-09</td><td>344</td><td>79</td><td>424</td><td class="lt-note">Smallest total</td></tr>
+          <tr><td>ST-10</td><td>361</td><td>107</td><td>468</td><td></td></tr>
+          <tr><td>ST-11</td><td>384</td><td>167</td><td>550</td><td class="lt-note">★ Largest balcony (167 ft²)</td></tr>
+          <tr><td>ST-12</td><td>405</td><td>107</td><td>512</td><td class="lt-note">★ Largest suite</td></tr>
+          <tr><td>ST-13</td><td>368</td><td>107</td><td>474</td><td></td></tr>
+        </tbody></table></details>
+        <details class="layout-detail"><summary>1 Bedroom — 13 layouts · 714–1,022 sqft total</summary><table class="layout-table"><thead><tr><th>Layout</th><th>Suite (ft²)</th><th>Balcony (ft²)</th><th>Total (ft²)</th><th></th></tr></thead><tbody>
+          <tr><td>1BR-01</td><td>643</td><td>379</td><td>1,022</td><td class="lt-note">★ Mega terrace</td></tr>
+          <tr><td>1BR-02</td><td>640</td><td>144</td><td>784</td><td></td></tr>
+          <tr><td>1BR-03</td><td>640</td><td>144</td><td>784</td><td></td></tr>
+          <tr><td>1BR-04</td><td>556</td><td>158</td><td>714</td><td class="lt-note">Smallest total</td></tr>
+          <tr><td>1BR-05</td><td>687</td><td>170</td><td>857</td><td class="lt-note">Largest suite</td></tr>
+          <tr><td>1BR-06</td><td>670</td><td>352</td><td>1,022</td><td class="lt-note">★ Large terrace</td></tr>
+          <tr><td>1BR-07</td><td>626</td><td>158</td><td>785</td><td></td></tr>
+          <tr><td>1BR-08</td><td>575</td><td>214</td><td>789</td><td></td></tr>
+          <tr><td>1BR-09</td><td>640</td><td>195</td><td>835</td><td></td></tr>
+          <tr><td>1BR-10</td><td>650</td><td>225</td><td>876</td><td></td></tr>
+          <tr><td>1BR-11</td><td>663</td><td>244</td><td>908</td><td></td></tr>
+          <tr><td>1BR-12</td><td>655</td><td>158</td><td>813</td><td></td></tr>
+          <tr><td>1BR-13</td><td>645</td><td>155</td><td>800</td><td></td></tr>
+        </tbody></table></details>
+        <details class="layout-detail"><summary>2 Bedroom Standard — 12 layouts · 857–3,128 sqft total</summary><table class="layout-table"><thead><tr><th>Layout</th><th>Suite (ft²)</th><th>Balcony/Pool (ft²)</th><th>Total (ft²)</th><th></th></tr></thead><tbody>
+          <tr><td>2BR-01</td><td>1,035</td><td>289</td><td>1,324</td><td></td></tr>
+          <tr><td>2BR-02</td><td>904</td><td>185</td><td>1,090</td><td></td></tr>
+          <tr><td>2BR-03</td><td>905</td><td>1,788</td><td>2,692</td><td class="lt-pool">★ Lap pool</td></tr>
+          <tr><td>2BR-04</td><td>909</td><td>1,970</td><td>2,879</td><td class="lt-pool">★ Lap pool (largest)</td></tr>
+          <tr><td>2BR-05</td><td>908</td><td>368</td><td>1,276</td><td></td></tr>
+          <tr><td>2BR-06</td><td>865</td><td>182</td><td>1,048</td><td></td></tr>
+          <tr><td>2BR-07</td><td>865</td><td>1,490</td><td>2,355</td><td class="lt-pool">★ Lap pool</td></tr>
+          <tr><td>2BR-08</td><td>1,189</td><td>1,939</td><td>3,128</td><td class="lt-pool">★ Lap pool · largest suite</td></tr>
+          <tr><td>2BR-09</td><td>1,012</td><td>1,548</td><td>2,559</td><td class="lt-pool">★ Lap pool</td></tr>
+          <tr><td>2BR-10</td><td>953</td><td>188</td><td>1,141</td><td></td></tr>
+          <tr><td>2BR-11</td><td>792</td><td>188</td><td>980</td><td></td></tr>
+          <tr><td>2BR-12</td><td>687</td><td>170</td><td>857</td><td class="lt-note">Smallest total</td></tr>
+        </tbody></table></details>
+        <details class="layout-detail"><summary>2 Bedroom Island — 3 layouts · 1,326–2,083 sqft total</summary><table class="layout-table"><thead><tr><th>Layout</th><th>Suite (ft²)</th><th>Balcony (ft²)</th><th>Total (ft²)</th><th></th></tr></thead><tbody>
+          <tr><td>2BR-I-01</td><td>1,083</td><td>243</td><td>1,326</td><td></td></tr>
+          <tr><td>2BR-I-02</td><td>1,178</td><td>711</td><td>1,889</td><td></td></tr>
+          <tr><td>2BR-I-03</td><td>1,269</td><td>814</td><td>2,083</td><td class="lt-note">Largest Island unit</td></tr>
+        </tbody></table></details>
+        <details class="layout-detail"><summary>3 Bedroom Standard — 7 layouts · 1,952–3,904 sqft total</summary><table class="layout-table"><thead><tr><th>Layout</th><th>Suite (ft²)</th><th>Terrace (ft²)</th><th>Total (ft²)</th><th></th></tr></thead><tbody>
+          <tr><td>3BR-01</td><td>1,525</td><td>1,365</td><td>2,889</td><td></td></tr>
+          <tr><td>3BR-02</td><td>1,525</td><td>1,365</td><td>2,889</td><td></td></tr>
+          <tr><td>3BR-03</td><td>1,989</td><td>1,893</td><td>3,883</td><td class="lt-note">Largest suite</td></tr>
+          <tr><td>3BR-04</td><td>1,835</td><td>2,033</td><td>3,868</td><td class="lt-note">Largest terrace</td></tr>
+          <tr><td>3BR-05</td><td>1,979</td><td>1,925</td><td>3,904</td><td class="lt-note">★ Largest total</td></tr>
+          <tr><td>3BR-06</td><td>1,820</td><td>2,001</td><td>3,821</td><td></td></tr>
+          <tr><td>3BR-07</td><td>1,524</td><td>428</td><td>1,952</td><td class="lt-note">Smallest — compact terrace</td></tr>
+        </tbody></table></details>
+        <details class="layout-detail"><summary>3 Bedroom Island — 2 layouts · 2,196–2,718 sqft total</summary><table class="layout-table"><thead><tr><th>Layout</th><th>Suite (ft²)</th><th>Balcony (ft²)</th><th>Total (ft²)</th><th></th></tr></thead><tbody>
+          <tr><td>3BR-I-01</td><td>1,526</td><td>670</td><td>2,196</td><td></td></tr>
+          <tr><td>3BR-I-02</td><td>1,813</td><td>904</td><td>2,718</td><td class="lt-note">Larger Island unit</td></tr>
+        </tbody></table></details>
+        <details class="layout-detail"><summary>4 Bedroom Island — 2 layouts · 2,385–2,718 sqft total (12 units only)</summary><table class="layout-table"><thead><tr><th>Layout</th><th>Suite (ft²)</th><th>Balcony (ft²)</th><th>Total (ft²)</th><th></th></tr></thead><tbody>
+          <tr><td>4BR-I-01</td><td>2,018</td><td>700</td><td>2,718</td><td class="lt-note">Larger layout</td></tr>
+          <tr><td>4BR-I-02</td><td>1,793</td><td>592</td><td>2,385</td><td></td></tr>
+        </tbody></table></details>
+        <div style="background:rgba(100,180,255,.08);border-left:3px solid #64b4ff;padding:8px 10px;border-radius:4px;margin-top:8px;font-size:11px">
+          <strong style="color:#64b4ff">★ LAP POOL UNITS — 2BR types 03, 04, 07, 08, 09:</strong> Private lap pool included. Total footprint 2,355–3,128 sqft at a 2BR price. Rarest product in Business Bay at this tier.
+        </div>
+        <div style="background:rgba(100,180,255,.08);border-left:3px solid var(--gold);padding:8px 10px;border-radius:4px;margin-top:6px;font-size:11px">
+          <strong style="color:var(--gold)">1BR-01 & 1BR-06 MEGA TERRACE:</strong> 350–380 sqft terraces push total to 1,022 sqft — delivers outdoor space of a 2BR at 1BR pricing.
+        </div>
+        <div style="margin-top:8px">
+          <h4>Indicative Pricing (from Excel)</h4>
+          <table class="mix-table">
+            <thead><tr><th>Type</th><th>20% DP</th><th>50% DP</th><th>Cash</th></tr></thead>
+            <tbody>
+              <tr><td>1 Bedroom</td><td class="price">~2,190,000</td><td>~2,125,000</td><td>~2,060,000</td></tr>
+              <tr><td>2 Bedroom</td><td class="price">~2,920,000</td><td>~2,832,000</td><td>~2,745,000</td></tr>
+            </tbody>
+          </table>
+          <div class="flag">⚠️ Sample rows from Excel — verify exact pricing from current availability sheet.</div>
+        </div>
+      </div>
+      <div>
+        <h4>Fast Facts</h4>
+        <div class="fact-grid">
+          <div class="fact-row"><span class="fact-label">Location</span><span class="fact-value">Business Bay</span></div>
+          <div class="fact-row"><span class="fact-label">Completion</span><span class="fact-value">Mar 2027</span></div>
+          <div class="fact-row"><span class="fact-label">Payment plan</span><span class="fact-value">70/30</span></div>
+          <div class="fact-row"><span class="fact-label">Total inventory</span><span class="fact-value">1,598 residential</span></div>
+          <div class="fact-row"><span class="fact-label">Starting price</span><span class="fact-value">⚠️ TBC — confirm from sheet</span></div>
+        </div>
+        <div class="comm-box" style="margin-top:12px">
+          <div class="rate">6% / 7% cash</div>
+          <div class="desc">Among highest in portfolio — Business Bay premium</div>
+        </div>
+        <h4 style="margin-top:16px">Amenities</h4>
+        <div class="chip-row" style="margin-top:6px">
+          <span class="chip">Pool Deck</span>
+          <span class="chip">Luxury Lobby</span>
+          <span class="chip">Skyline View</span>
+          <span class="chip">Gym & Fitness</span>
+          <span class="chip">Artificial Beach</span>
+          <span class="chip">Play Area</span>
+          <span class="chip">Sunken Seating</span>
+          <span class="chip">Running Lane</span>
+          <span class="chip">Sky Garden</span>
+        </div>
+      </div>
+      <div>
+        <h4>Material Palette</h4>
+        <div class="chip-row" style="margin-top:6px">
+          <span class="chip">Sandwich Glass</span>
+          <span class="chip">Brava Shell Porcelain</span>
+          <span class="chip">Marvel Silk</span>
+          <span class="chip">Marvel Diva Aqua Porcelain</span>
+          <span class="chip">Natural Oak Wood</span>
+          <span class="chip">Blue Fish Pearl Mosaic</span>
+          <span class="chip">Tinted Green Mirror</span>
+          <span class="chip">Fluted Travertine</span>
+          <span class="chip">Brushed Brass</span>
+          <span class="chip">Black Mirror</span>
+          <span class="chip">Calacatta Viola</span>
+          <span class="chip">Travertine Panel</span>
+          <span class="chip">Green Subway Tiles</span>
+        </div>
+        <h4 style="margin-top:16px">Key Pitch Points</h4>
+        <ul class="pitch-list">
+          <li>Business Bay address — DIFC / Downtown walkable, Metro connected (Business Bay station)</li>
+          <li>Mar 2027 — one of the nearest handover dates in portfolio; strong for end-users and flip investors</li>
+          <li>1BR at ~2.06M cash — entry to Business Bay; 13 layouts from 714–1,022 sqft; types 01 & 06 have 350–380 sqft terraces</li>
+          <li><strong>2BR Lap Pool units</strong> — 5 types with private pool, total 2,355–3,128 sqft at 2BR pricing; nothing like this exists in BB</li>
+          <li>"Island" premium units in 2BR/3BR/4BR — larger corner footprints with 700–900 sqft balconies</li>
+          <li>4BR product (12 units) — rare in Business Bay, 2,385–2,718 sqft total</li>
+          <li>Artificial Beach + Sunken Seating + Sky Garden — resort lifestyle inside city center</li>
+          <li>6% / 7% cash commission — one of the highest payouts in the Binghatti portfolio</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Location — Business Bay Drive Times</h4>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Steps from Dubai Canal · Heart of Business Bay · Metro connected</div>
+        <table class="mix-table">
+          <thead><tr><th>Destination</th><th>Time</th></tr></thead>
+          <tbody>
+            <tr><td>Burj Khalifa & Dubai Mall</td><td>5 min</td></tr>
+            <tr><td>Dubai Opera</td><td>5 min</td></tr>
+            <tr><td>DIFC</td><td>10 min</td></tr>
+            <tr><td>Museum of the Future</td><td>12 min</td></tr>
+            <tr><td>Meydan Hotel & Race Course</td><td>12 min</td></tr>
+            <tr><td>Burj Al Arab & Jumeirah Beach</td><td>15 min</td></tr>
+            <tr><td>Dubai International Airport (DXB)</td><td>16 min</td></tr>
+            <tr><td>Dubai Harbour</td><td>16 min</td></tr>
+            <tr><td>Dubai Creek Golf & Yacht Club</td><td>16 min</td></tr>
+            <tr><td>Palm Jumeirah</td><td>18 min</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:14px;background:rgba(201,162,39,.07);border:1px solid rgba(201,162,39,.25);border-radius:8px;padding:11px">
+          <div style="color:var(--gold);font-size:10px;font-weight:700;letter-spacing:.4px;margin-bottom:7px">📊 WHO RENTS HERE — DEMAND DRIVERS (VERIFIED)</div>
+          <div style="font-size:10.5px;color:var(--muted);line-height:1.9">
+            <strong style="color:var(--text)">DIFC +775 companies in Q1 2026 alone</strong> — every new company = new executives needing housing. Grade A office occupancy in DIFC/Downtown running 95–99% (near capacity). Demand is structural.<br>
+            <strong style="color:var(--text)">Dubai population 4M+ (2025)</strong> — +5.4% YoY; 175,000–225,000 new residents expected in 2026. Rental market totalled AED 126.4B in 2025. BB absorbs a disproportionate share of high-income arrivals.<br>
+            <strong style="color:var(--text)">48% of Gulf companies expanding workforce in 2026</strong> — relocation packages = premium residential demand in CBD. Business Bay is the DIFC spillover address of choice.<br>
+            <em style="color:var(--gold)">Aquarise Mar 2027 handover = immediate entry into one of the most liquid rental markets in Dubai.</em>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- WRAITH -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="project-section" id="wraith">
+  <div class="section-title">👻 Binghatti Wraith — Al Jaddaf</div>
+  <div class="project-card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <h3>Binghatti Wraith</h3>
+        <div class="card-meta">
+          <span class="meta-pill">📍 Al Jaddaf</span>
+          <span class="meta-pill gold">Dec 2027</span>
+          <span class="meta-pill">70/30 · 50/50</span>
+          <span class="badge badge-offplan">Off-plan</span>
+          <span class="meta-pill">G + 4P + 14F + Roof</span>
+          <span class="meta-pill">889 units total</span>
+        </div>
+        <h4 style="margin-top:10px">Building Facts</h4>
+        <div style="font-size:11px;color:var(--muted);line-height:1.9">
+          Structure: <strong style="color:var(--text)">G + 4 Podium + 14 Residential Floors + Roof</strong><br>
+          Plot: <strong style="color:var(--text)">9,217.80 sqm / 99,219.57 sqft</strong><br>
+          Total units: <strong style="color:var(--text)">855 apartments + 34 ground-floor retail</strong><br>
+          Position: <strong style="color:var(--gold)">Inside a major roundabout — 360° permanent exposure, cannot be boxed in by future construction</strong>
+        </div>
+      </div>
+      <div class="card-avail"><div class="num">166</div><div class="lbl">Available</div></div>
+    </div>
+
+    <div class="card-body" style="border-top:1px solid var(--border)">
+      <div>
+        <h4>Unit Mix & Sizes</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>Count</th><th>Layouts</th><th>Total range (sqft)</th><th>From (AED)</th><th>AED/sqft</th></tr></thead>
+          <tbody>
+            <tr><td>Studio</td><td>204</td><td>6</td><td>341–459</td><td class="price" style="color:var(--amber)">TBC</td><td style="color:var(--muted)">—</td></tr>
+            <tr><td>1 Bedroom</td><td>563</td><td>16</td><td>662–1,436</td><td class="price">1,220,000</td><td style="color:var(--gold);font-weight:600">~1,840</td></tr>
+            <tr><td>2 Bedroom</td><td>86</td><td>8</td><td>1,114–1,996</td><td class="price" style="color:var(--amber)">TBC</td><td style="color:var(--muted)">—</td></tr>
+            <tr><td>3 Bedroom</td><td>2</td><td>1</td><td>2,574 ★ lap pool</td><td class="price" style="color:var(--amber)">TBC</td><td style="color:var(--muted)">—</td></tr>
+            <tr><td>Retail (GF)</td><td>34</td><td>—</td><td>—</td><td style="color:var(--muted)">—</td><td style="color:var(--muted)">—</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:10px;color:var(--amber);margin-top:4px">⚠️ 1BR confirmed AED 1.22M from floor 1 (10 Jul 2026 data). Studio / 2BR / 3BR pricing TBC — confirm before pitching.</div>
+        <details class="layout-detail"><summary>Studio — 6 layouts · 341–459 sqft total</summary><table class="layout-table"><thead><tr><th>Layout</th><th>Suite (ft²)</th><th>Balcony (ft²)</th><th>Total (ft²)</th><th></th></tr></thead><tbody>
+          <tr><td>ST-01</td><td>315</td><td>81</td><td>396</td><td></td></tr>
+          <tr><td>ST-02</td><td>285</td><td>56</td><td>341</td><td class="lt-note">Smallest</td></tr>
+          <tr><td>ST-03</td><td>340</td><td>119</td><td>459</td><td class="lt-note">Largest</td></tr>
+          <tr><td>ST-04</td><td>340</td><td>119</td><td>459</td><td></td></tr>
+          <tr><td>ST-05</td><td>313</td><td>65</td><td>378</td><td></td></tr>
+          <tr><td>ST-06</td><td>340</td><td>98</td><td>438</td><td></td></tr>
+        </tbody></table></details>
+        <details class="layout-detail"><summary>1 Bedroom — 16 layouts · 666–1,436 sqft total</summary><table class="layout-table"><thead><tr><th>Layout</th><th>Suite (ft²)</th><th>Balcony (ft²)</th><th>Total (ft²)</th><th></th></tr></thead><tbody>
+          <tr><td>1BR-01</td><td>605</td><td>61</td><td>666</td><td class="lt-note">Smallest</td></tr>
+          <tr><td>1BR-02</td><td>613</td><td>144</td><td>756</td><td></td></tr>
+          <tr><td>1BR-03</td><td>613</td><td>144</td><td>757</td><td></td></tr>
+          <tr><td>1BR-04</td><td>636</td><td>184</td><td>821</td><td></td></tr>
+          <tr><td>1BR-05</td><td>635</td><td>170</td><td>805</td><td></td></tr>
+          <tr><td>1BR-06</td><td>654</td><td>609</td><td>1,263</td><td class="lt-note">★ Large terrace</td></tr>
+          <tr><td>1BR-07</td><td>636</td><td>800</td><td>1,436</td><td class="lt-note">★ Mega terrace — biggest</td></tr>
+          <tr><td>1BR-08</td><td>635</td><td>178</td><td>812</td><td></td></tr>
+          <tr><td>1BR-09</td><td>600</td><td>153</td><td>753</td><td></td></tr>
+          <tr><td>1BR-10</td><td>602</td><td>146</td><td>748</td><td></td></tr>
+          <tr><td>1BR-11</td><td>654</td><td>122</td><td>776</td><td></td></tr>
+          <tr><td>1BR-12</td><td>636</td><td>178</td><td>814</td><td></td></tr>
+          <tr><td>1BR-13</td><td>643</td><td>171</td><td>814</td><td class="lt-note">Private terrace</td></tr>
+          <tr><td>1BR-14</td><td>552</td><td>182</td><td>734</td><td></td></tr>
+          <tr><td>1BR-15</td><td>659</td><td>178</td><td>837</td><td class="lt-note">Private terrace</td></tr>
+          <tr><td>1BR-16</td><td>664</td><td>171</td><td>835</td><td class="lt-note">Private terrace</td></tr>
+        </tbody></table></details>
+        <details class="layout-detail"><summary>2 Bedroom — 8 layouts · 1,114–1,996 sqft total</summary><table class="layout-table"><thead><tr><th>Layout</th><th>Suite (ft²)</th><th>Balcony (ft²)</th><th>Total (ft²)</th><th></th></tr></thead><tbody>
+          <tr><td>2BR-01</td><td>946</td><td>239</td><td>1,185</td><td></td></tr>
+          <tr><td>2BR-02</td><td>939</td><td>231</td><td>1,170</td><td></td></tr>
+          <tr><td>2BR-03</td><td>892</td><td>229</td><td>1,121</td><td></td></tr>
+          <tr><td>2BR-04</td><td>891</td><td>1,106</td><td>1,996</td><td class="lt-note">★ Huge terrace</td></tr>
+          <tr><td>2BR-05</td><td>892</td><td>715</td><td>1,608</td><td class="lt-note">★ Large terrace</td></tr>
+          <tr><td>2BR-06</td><td>891</td><td>847</td><td>1,737</td><td class="lt-note">★ Large terrace</td></tr>
+          <tr><td>2BR-07</td><td>892</td><td>222</td><td>1,115</td><td></td></tr>
+          <tr><td>2BR-08</td><td>885</td><td>1,008</td><td>1,893</td><td class="lt-pool">★ Private terrace + lap pool</td></tr>
+        </tbody></table></details>
+        <details class="layout-detail"><summary>3 Bedroom — 1 layout · 2,574 sqft (2 units only)</summary><table class="layout-table"><thead><tr><th>Layout</th><th>Suite (ft²)</th><th>Terrace (ft²)</th><th>Total (ft²)</th><th></th></tr></thead><tbody>
+          <tr><td>3BR-01</td><td>1,200</td><td>1,375</td><td>2,574</td><td class="lt-pool">★ Private lap pool</td></tr>
+        </tbody></table></details>
+      </div>
+      <div>
+        <h4>Fast Facts</h4>
+        <div class="fact-grid">
+          <div class="fact-row"><span class="fact-label">Location</span><span class="fact-value">Al Jaddaf</span></div>
+          <div class="fact-row"><span class="fact-label">Completion</span><span class="fact-value">Dec 2027</span></div>
+          <div class="fact-row"><span class="fact-label">Payment plans</span><span class="fact-value">70/30 · 50/50</span></div>
+          <div class="fact-row"><span class="fact-label">Commission</span><span class="fact-value">5% / 6% cash</span></div>
+          <div class="fact-row"><span class="fact-label">Plot area</span><span class="fact-value">99,219 sqft</span></div>
+          <div class="fact-row"><span class="fact-label">Retail spaces</span><span class="fact-value">34 GF units</span></div>
+          <div class="fact-row"><span class="fact-label">Amenities</span><span class="fact-value">26+ resort-style</span></div>
+          <div class="fact-row"><span class="fact-label">Price from</span><span class="fact-value">⚠️ TBC</span></div>
+        </div>
+      </div>
+      <div>
+        <h4>Location — Drive &amp; Walk Times</h4>
+        <div style="font-size:11px;color:var(--muted);line-height:1.9">
+          <div>🚗 Al Khail / SZR / Oud Metha — <strong style="color:var(--text)">90 sec</strong></div>
+          <div>🚇 Al Jaddaf Metro (Green Line) — <strong style="color:var(--text)">2 min</strong></div>
+          <div>🎨 Dubai Design District (D3) — <strong style="color:var(--text)">2 min</strong></div>
+          <div>🚶 Al Jaddaf Walk waterfront — <strong style="color:var(--text)">2 min</strong></div>
+          <div>🏇 Meydan Racecourse — <strong style="color:var(--text)">10–12 min</strong></div>
+          <div>🔮 Museum of the Future — <strong style="color:var(--text)">10–12 min</strong></div>
+          <div>🎭 Dubai Opera — <strong style="color:var(--text)">10–12 min</strong></div>
+          <div>🗼 Downtown Dubai &amp; Burj Khalifa — <strong style="color:var(--text)">10–12 min</strong></div>
+          <div>🏥 Dubai Healthcare City — <strong style="color:var(--text)">nearby</strong></div>
+          <div>🦅 Ras Al Khor Wildlife Sanctuary — <strong style="color:var(--text)">10–12 min</strong></div>
+        </div>
+      </div>
+      <div>
+        <h4>Amenities &amp; Materials</h4>
+        <div style="background:rgba(14,119,189,.07);border:1px solid rgba(14,119,189,.2);border-radius:8px;padding:10px;margin-bottom:8px">
+          <div style="color:#4ab3e8;font-size:10px;font-weight:700;margin-bottom:5px">OUTDOOR POOL DECK</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.7">Temp-controlled Infinity Pool · Jacuzzi &amp; Shallow Pool · Sun Deck &amp; Private Cabanas · Pool Bar</div>
+        </div>
+        <div style="background:rgba(201,162,39,.05);border:1px solid rgba(201,162,39,.15);border-radius:8px;padding:10px;margin-bottom:10px">
+          <div style="color:var(--gold);font-size:10px;font-weight:700;margin-bottom:5px">HEALTH &amp; WELLNESS</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.7">Gym &amp; Fitness · Padel Court · Half-Basketball Court · Outdoor Fitness &amp; Yoga Deck · Scenic walking track</div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);line-height:1.7">
+          <strong style="color:var(--text)">Lobby:</strong> Feature Marble · Stone Flooring · Walnut Wood · Mesh Mirror · Brass Metal · Mirror Ceiling · Leather Reception<br>
+          <strong style="color:var(--text)">Apartments:</strong> Corian Countertop · Laminate Kitchen Cabinets · Porcelain Tile
+        </div>
+      </div>
+      <div>
+        <h4>Key Pitch Points</h4>
+        <div style="background:rgba(201,162,39,.07);border:1px solid rgba(201,162,39,.25);border-radius:8px;padding:11px;margin-bottom:12px">
+          <div style="color:var(--gold);font-size:10px;font-weight:700;letter-spacing:.4px;margin-bottom:7px">📊 WHO LIVES HERE — DEMAND DRIVERS (VERIFIED)</div>
+          <div style="font-size:10.5px;color:var(--muted);line-height:1.9">
+            <strong style="color:var(--text)">🏥 Dubai Healthcare City (5 min):</strong> 69,400+ private healthcare workers in 2025 (+8% YoY). AED 1.3B expansion underway, delivery Nov 2027. Doctors, nurses &amp; medical executives — captive high-income tenant pool who cannot commute far.<br>
+            <strong style="color:var(--text)">🏙️ Urban Tech District (Al Jaddaf Creekside):</strong> 4,000 new jobs in green urban tech, AI, applied research. 140,000 sqm, world's largest urban tech district. Net-zero. Phases through 2030.<br>
+            <strong style="color:var(--text)">🎨 D3 + D-Tech cluster (2 min):</strong> Creative, media &amp; tech professionals. Al Jaddaf is the nearest quality residential address to their office.<br>
+            <em style="color:var(--gold)">Combined: 7,000+ new high-income workers arriving in this micro-market by 2030 — on top of existing Healthcare City workforce.</em>
+          </div>
+        </div>
+        <ul class="pitch-list">
+          <li>Inside a major roundabout — 360° permanent exposure; no future building can block it</li>
+          <li>90 seconds to Al Khail + SZR — fastest highway access in the Binghatti portfolio</li>
+          <li>2 min to Al Jaddaf Metro (Green Line) — 69,400+ healthcare workers + tech professionals need easy commutes; Wraith is the answer</li>
+          <li>2 min to D3 Dubai Design District — creative/tech tenant base next door</li>
+          <li>1BR-06 &amp; 07: 600–800 sqft terraces at 1BR pricing — delivers 2BR outdoor living</li>
+          <li>2BR-08 &amp; 3BR: private lap pools — ultra-rare below luxury pricing</li>
+          <li>Two payment plans (70/30 &amp; 50/50) — flex to match any buyer cashflow</li>
+          <li>Crystalline glass facade + night accent lighting — skyline landmark</li>
+          <li>Jaddaf Waterfront &lt;1km — waterfront dining, cultural district</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- LUXURIA -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="project-section" id="luxuria">
+  <div class="section-title">✨ Luxuria — JVT</div>
+  <div class="project-card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <h3>Binghatti Luxuria</h3>
+        <div class="card-meta">
+          <span class="meta-pill">📍 JVT (Jumeirah Village Triangle)</span>
+          <span class="meta-pill gold">Jul 2027</span>
+          <span class="meta-pill">70/30 · 20% DP</span>
+          <span class="badge badge-offplan">Off-plan</span>
+          <span class="meta-pill">4299 · 3B+G+4P+24R</span>
+        </div>
+      </div>
+      <div class="card-avail"><div class="num">157</div><div class="lbl">Available</div></div>
+    </div>
+    <div class="card-body">
+      <div>
+        <h4>Pricing & Sizes</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>From (AED)</th><th>Size (sqft)</th></tr></thead>
+          <tbody>
+            <tr><td>Studio</td><td class="price">766,999</td><td>336+</td></tr>
+            <tr><td>1 Bedroom</td><td class="price">1,249,999</td><td>698+</td></tr>
+            <tr><td>2 Bedroom</td><td class="price">1,799,999</td><td>963+</td></tr>
+            <tr><td>2BR + Pool</td><td class="price">1,949,999</td><td>1,525+</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h4>Unit Mix (457 total + 12 retail)</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>Count</th></tr></thead>
+          <tbody>
+            <tr><td>Studio</td><td class="count">213</td></tr>
+            <tr><td>1 Bedroom</td><td class="count">195</td></tr>
+            <tr><td>2 Bedroom</td><td class="count">46</td></tr>
+            <tr><td>2BR + Pool</td><td class="count">3</td></tr>
+            <tr><td>Retail</td><td class="count">12</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h4>Fast Facts</h4>
+        <div class="fact-grid">
+          <div class="fact-row"><span class="fact-label">SC</span><span class="fact-value">16–18 AED/sqft</span></div>
+          <div class="fact-row"><span class="fact-label">Commission</span><span class="fact-value">⚠️ TBC</span></div>
+          <div class="fact-row"><span class="fact-label">Completion date</span><span class="fact-value">31 Jul 2027</span></div>
+          <div class="fact-row"><span class="fact-label">Floors</span><span class="fact-value">24 residential</span></div>
+        </div>
+        <h4 style="margin-top:12px">Amenities</h4>
+        <div style="font-size:11px;color:var(--muted)">Indoor &amp; outdoor gym · Adult pool · Kids pool · Jacuzzi · Kids playground · Aerobic platform · Fully equipped kitchen in all units</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ETHEREA -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="project-section" id="etherea">
+  <div class="section-title">🌀 Etherea — JVC</div>
+  <div class="project-card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <h3>Etherea</h3>
+        <div class="card-meta">
+          <span class="meta-pill">📍 JVC (Jumeirah Village Circle)</span>
+          <span class="meta-pill gold">Dec 2027</span>
+          <span class="meta-pill">70/30 · 20% DP</span>
+          <span class="badge badge-offplan">Off-plan</span>
+          <span class="meta-pill">4303 · B+G+5P+22F</span>
+        </div>
+      </div>
+      <div class="card-avail"><div class="num">121</div><div class="lbl">Available</div></div>
+    </div>
+    <div class="card-body">
+      <div>
+        <h4>Pricing & Sizes</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>From (AED)</th><th>Size (sqft)</th></tr></thead>
+          <tbody>
+            <tr><td>Studio</td><td class="price">789,999</td><td>336–422</td></tr>
+            <tr><td>1 Bedroom</td><td class="price">1,199,999</td><td>575–774</td></tr>
+            <tr><td>2 Bedroom</td><td class="price">1,699,999</td><td>756–1,330</td></tr>
+            <tr><td>Retail</td><td class="price">5,397,999</td><td>1,350–1,827</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h4>Unit Mix (282 total + 5 retail)</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>Count</th></tr></thead>
+          <tbody>
+            <tr><td>Studio</td><td class="count">64</td></tr>
+            <tr><td>1 Bedroom</td><td class="count">134</td></tr>
+            <tr><td>2 Bedroom</td><td class="count">84</td></tr>
+            <tr><td>Retail</td><td class="count">5</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:10px;font-size:11px;color:var(--muted)">SC: ≈16–18 AED/sqft</div>
+      </div>
+      <div>
+        <div class="comm-box">
+          <div class="rate">5% / 6%</div>
+          <div class="desc">5% for 1–2 units · 6% for 3+ same month · 6% on full cash</div>
+        </div>
+        <h4 style="margin-top:12px">Key Pitch Points</h4>
+        <ul class="pitch-list">
+          <li>Boutique 282-unit tower — more personal than mega-towers</li>
+          <li>JVC: highest rental yield community in Dubai (7–9%)</li>
+          <li>Park + skyline views, 10+ amenities</li>
+          <li>Studio entry at 789,999 with kitchen appliances included</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- HILLCREST -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="project-section" id="hillcrest">
+  <div class="section-title">🌿 Hillcrest — Arjan</div>
+  <div class="project-card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <h3>Hillcrest</h3>
+        <div class="card-meta">
+          <span class="meta-pill">📍 Arjan</span>
+          <span class="meta-pill gold">Dec 2026</span>
+          <span class="meta-pill">70/30 (2BR)</span>
+          <span class="badge badge-offplan">Off-plan</span>
+          <span class="meta-pill">4105 · 1B+G+4F</span>
+        </div>
+      </div>
+      <div class="card-avail"><div class="num">89</div><div class="lbl">Available</div></div>
+    </div>
+    <div class="card-body">
+      <div>
+        <h4>Pricing & Sizes</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>From (AED)</th><th>Size (sqft)</th></tr></thead>
+          <tbody>
+            <tr><td>Studio</td><td class="price">820,999</td><td>333–394</td></tr>
+            <tr><td>1 Bedroom</td><td class="price">1,299,999</td><td>653–913</td></tr>
+            <tr><td>2 Bedroom</td><td class="price">2,129,999</td><td>1,028+</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h4>Unit Mix (322 total + 28 retail)</h4>
+        <table class="mix-table">
+          <thead><tr><th>Type</th><th>Count</th></tr></thead>
+          <tbody>
+            <tr><td>Studio</td><td class="count">180</td></tr>
+            <tr><td>1 Bedroom</td><td class="count">138</td></tr>
+            <tr><td>2 Bedroom</td><td class="count">4</td></tr>
+            <tr><td>Retail</td><td class="count">28</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:8px;font-size:11px;color:var(--muted)">SC: ≈15 AED/sqft</div>
+      </div>
+      <div>
+        <h4>Important Notes</h4>
+        <div class="flag">⚠️ Exceptional 50/50 for Studio/1BR expired 31 Oct 2025. Current plan: 70/30 (10% DP for 2BR · 60% construction · 30% completion). Verify Studio/1BR plan with team.</div>
+        <h4 style="margin-top:10px">Key Pitch</h4>
+        <ul class="pitch-list">
+          <li>First Binghatti signature residence in Arjan — early-mover edge</li>
+          <li>Dec 2026 handover — nearest delivery in portfolio</li>
+          <li>28 retail units in building — community amenity built-in</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- QUICK REFERENCE — SMALLER INVENTORY -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section-title" id="quick-ref">📋 Smaller Inventory — Quick Reference</div>
+<div class="quick-grid">
+
+  <div class="quick-card">
+    <div class="quick-name">Burj Jacob & Co Residences</div>
+    <div class="quick-facts">
+      <div class="qf"><strong>Business Bay</strong>Location</div>
+      <div class="qf"><strong>77</strong>Available</div>
+      <div class="qf"><strong>Apr 2027</strong>Completion</div>
+      <div class="qf"><strong style="color:var(--gold)">7% / 7%</strong>Commission</div>
+      <div class="qf"><strong>70/30</strong>Plan</div>
+      <div class="qf"><strong>Hyper Luxury</strong>Tier</div>
+    </div>
+    <div class="flag" style="margin-top:8px">⚠️ Unit mix & pricing not provided. Highest commission in portfolio — flag for luxury clients.</div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-name">Bugatti Residences</div>
+    <div class="quick-facts">
+      <div class="qf"><strong>Business Bay</strong>Location</div>
+      <div class="qf"><strong>53</strong>Available</div>
+      <div class="qf"><strong>Feb 2027</strong>Completion</div>
+      <div class="qf"><strong style="color:var(--gold)">7% / 7%</strong>Commission</div>
+      <div class="qf"><strong>70/30</strong>Plan</div>
+      <div class="qf"><strong>Hyper Luxury</strong>Tier</div>
+    </div>
+    <div class="flag" style="margin-top:8px">⚠️ Unit mix & pricing not provided. Ultra-luxury branded product.</div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-name">Ghost</div>
+    <div class="quick-facts">
+      <div class="qf"><strong>Al Jaddaf</strong>Location</div>
+      <div class="qf"><strong>50</strong>Available</div>
+      <div class="qf"><strong>Apr 2026</strong>Completion</div>
+      <div class="qf"><strong>5% / 6%</strong>Commission</div>
+      <div class="qf"><strong>70/30</strong>Plan</div>
+      <div class="qf"><strong>Near-term</strong>Note</div>
+    </div>
+    <div class="flag" style="margin-top:8px">⚠️ Apr 2026 handover means very close — confirm current construction status.</div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-name">Cullinan</div>
+    <div class="quick-facts">
+      <div class="qf"><strong>Al Jaddaf</strong>Location</div>
+      <div class="qf"><strong>33</strong>Available</div>
+      <div class="qf"><strong>Jun 2027</strong>Completion</div>
+      <div class="qf"><strong>5% / 6%</strong>Commission</div>
+      <div class="qf"><strong>70/30</strong>Plan</div>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-name">Flare 02</div>
+    <div class="quick-facts">
+      <div class="qf"><strong>JVT</strong>Location</div>
+      <div class="qf"><strong>30</strong>Available</div>
+      <div class="qf"><strong>Aug 2027</strong>Completion</div>
+      <div class="qf"><strong>5% / 6%</strong>Commission</div>
+      <div class="qf"><strong>70/30</strong>Plan</div>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-name">Flare 01</div>
+    <div class="quick-facts">
+      <div class="qf"><strong>⚠️ Unknown</strong>Location</div>
+      <div class="qf"><strong>32</strong>Available</div>
+      <div class="qf"><strong>⚠️ Unknown</strong>Completion</div>
+      <div class="qf"><strong>70/30</strong>Plan</div>
+    </div>
+    <div class="flag" style="margin-top:8px">⚠️ Location & completion not in provided data.</div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-name">Moonlight</div>
+    <div class="quick-facts">
+      <div class="qf"><strong>Al Jaddaf</strong>Location</div>
+      <div class="qf"><strong>18</strong>Available</div>
+      <div class="qf"><strong>Mar 2027</strong>Completion</div>
+      <div class="qf"><strong>5% / 6%</strong>Commission</div>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-name">Twilight</div>
+    <div class="quick-facts">
+      <div class="qf"><strong>⚠️ Unknown</strong>Location</div>
+      <div class="qf"><strong>18</strong>Available</div>
+      <div class="qf"><strong>⚠️ Unknown</strong>Completion</div>
+      <div class="qf"><strong>70/30</strong>Plan</div>
+    </div>
+    <div class="flag" style="margin-top:8px">⚠️ No location or completion data.</div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-name">Sky Rise</div>
+    <div class="quick-facts">
+      <div class="qf"><strong>Business Bay</strong>Location</div>
+      <div class="qf"><strong>15</strong>Available</div>
+      <div class="qf"><strong>Jun 2027</strong>Completion</div>
+      <div class="qf"><strong style="color:var(--gold)">6% / 7%</strong>Commission</div>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-name">Pinnacle ✅ READY</div>
+    <div class="quick-facts">
+      <div class="qf"><strong>Al Jaddaf</strong>Location</div>
+      <div class="qf"><strong>12</strong>Available</div>
+      <div class="qf"><strong style="color:var(--green)">READY NOW</strong>Status</div>
+      <div class="qf"><strong>5% / 6%</strong>Commission</div>
+    </div>
+    <div style="margin-top:8px;padding:6px 10px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:5px;font-size:11px;color:var(--green)">Only READY project in portfolio — immediate handover for clients who want to move in now.</div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-name">Amberhall</div>
+    <div class="quick-facts">
+      <div class="qf"><strong>JVC</strong>Location</div>
+      <div class="qf"><strong>11</strong>Available</div>
+      <div class="qf"><strong>Oct 2026</strong>Completion</div>
+      <div class="qf"><strong style="color:var(--gold)">6% / 7%</strong>Commission</div>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-name">Elite</div>
+    <div class="quick-facts">
+      <div class="qf"><strong>IMPZ</strong>Location</div>
+      <div class="qf"><strong>11</strong>Available</div>
+      <div class="qf"><strong>Jul 2026</strong>Completion</div>
+      <div class="qf"><strong>5% / 5%</strong>Commission</div>
+    </div>
+    <div style="margin-top:8px;font-size:11px;color:var(--muted)">Note: No cash premium on commission — same 5% regardless.</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- LOCATION GUIDE -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section-title" id="locations">📍 Location Guide — Demand Drivers & Why Each Area</div>
+
+<!-- MEYDAN -->
+<div class="location-section" id="loc-meydan">
+  <div class="location-card">
+    <div class="location-title">🏙️ Meydan
+      <span style="font-size:12px;font-weight:400;color:var(--muted)">— Premium master-planned district</span>
+    </div>
+    <div class="location-projects">
+      <span class="loc-tag">Vision Iconic</span>
+      <span class="loc-tag">Project Maybach</span>
+      <span class="loc-tag">Maybach Ultimate Luxury</span>
+      <span class="loc-tag">Maybach 6</span>
+    </div>
+    <div class="drivers">
+      <div class="driver-item"><div class="driver-num">01</div><div class="driver-text"><strong>Fastest price growth of ANY Dubai area in 2025</strong> — Meydan City +29% full year, +22% in Q3 alone (DLD data). Capital appreciation is proven, not projected.</div></div>
+      <div class="driver-item"><div class="driver-num">02</div><div class="driver-text"><strong>Gold Line metro — Meydan station confirmed</strong> — announced HH Sheikh Mohammed 22 Apr 2026, AED 34B, opens 9/9/2032. Nad Al Sheba/Meydan corridor projected +14–18% appreciation from metro access alone (market analysts, 2026).</div></div>
+      <div class="driver-item"><div class="driver-num">03</div><div class="driver-text"><strong>MBR City / Meydan One — 83,000 residents incoming</strong> — government master-planned. District One West Phase 1 handover 2027, Phase 2 2028. Meydan One Mall: 600+ retail outlets. Entire district population arriving 2027–2029.</div></div>
+      <div class="driver-item"><div class="driver-num">04</div><div class="driver-text"><strong>Meydan Racecourse + Dubai World Cup</strong> — UHNW global audience. Premium lifestyle address. 8 min to Burj Khalifa, 9 min to DIFC — executive commuter belt without the Downtown premium.</div></div>
+      <div class="driver-item"><div class="driver-num">05</div><div class="driver-text"><strong>World's first Mercedes-Benz branded city</strong> — 12 towers, 10M+ sqft, global brand. Premium rental commanded vs. generic towers. UHNW international buyer recognition in 195+ countries.</div></div>
+      <div class="driver-item"><div class="driver-num">06</div><div class="driver-text"><strong>Sheikh Mohammed Bin Zayed corridor</strong> — both airports, Downtown, Creek Harbour, and South Dubai all accessible fast. Infrastructure is already in place — not planned.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- BUSINESS BAY -->
+<div class="location-section" id="loc-bb">
+  <div class="location-card">
+    <div class="location-title">🏦 Business Bay
+      <span style="font-size:12px;font-weight:400;color:var(--muted)">— Dubai's central business district</span>
+    </div>
+    <div class="location-projects">
+      <span class="loc-tag">Mercedes-Benz Places (Downtown)</span>
+      <span class="loc-tag">Aquarise</span>
+      <span class="loc-tag">Burj Jacob & Co</span>
+      <span class="loc-tag">Bugatti Residences</span>
+      <span class="loc-tag">Sky Rise</span>
+    </div>
+    <div class="drivers">
+      <div class="driver-item"><div class="driver-num">01</div><div class="driver-text"><strong>DIFC added 775 companies in Q1 2026 alone</strong> — every new company = new executives and professional staff needing housing. Grade A office occupancy in DIFC/Downtown running at 95–99% (near capacity). Demand is structural, not cyclical.</div></div>
+      <div class="driver-item"><div class="driver-num">02</div><div class="driver-text"><strong>Dubai population crossed 4 million in 2025</strong> (+5.4% YoY) — 175,000–225,000 new residents expected in 2026 alone. Rental market hit AED 126.4 billion total in 2025. Business Bay and Downtown absorb a disproportionate share of high-income arrivals.</div></div>
+      <div class="driver-item"><div class="driver-num">03</div><div class="driver-text"><strong>48% of Gulf companies expanding workforce in 2026</strong> — corporate expansion = relocation packages = premium residential demand in CBD. Business Bay is the address of choice for DIFC spillover tenants.</div></div>
+      <div class="driver-item"><div class="driver-num">04</div><div class="driver-text"><strong>Metro connected</strong> — Business Bay Red Line station. 119,183 properties rented Mar–Jun 2026 across Dubai; BB one of the most liquid rental submarkets. Tenant demand constant.</div></div>
+      <div class="driver-item"><div class="driver-num">05</div><div class="driver-text"><strong>Dubai Canal waterfront + Downtown 5 min</strong> — Burj Khalifa, Dubai Mall, Dubai Opera walkable. Global tourism + resident overlap = world-class lifestyle that commands and holds rental premium.</div></div>
+      <div class="driver-item"><div class="driver-num">06</div><div class="driver-text"><strong>Commission advantage</strong> — Aquarise pays 6% / 7% cash — one of the highest in portfolio. Pair with strong demand story for cash buyers seeking Business Bay exposure.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- AL JADDAF -->
+<div class="location-section" id="loc-jaddaf">
+  <div class="location-card">
+    <div class="location-title">🏥 Al Jaddaf
+      <span style="font-size:12px;font-weight:400;color:var(--muted)">— Healthcare City, waterfront, tech cluster</span>
+    </div>
+    <div class="location-projects">
+      <span class="loc-tag">Wraith</span>
+      <span class="loc-tag">Ghost</span>
+      <span class="loc-tag">Cullinan</span>
+      <span class="loc-tag">Moonlight</span>
+      <span class="loc-tag">Pinnacle (Ready)</span>
+    </div>
+    <div class="drivers">
+      <div class="driver-item"><div class="driver-num">01</div><div class="driver-text"><strong>Dubai Healthcare City — 69,400+ medical professionals in 2025</strong> (+8% YoY from 64,100). AED 1.3 billion expansion groundbreaking Dec 2025, delivery Nov 2027. New hospitals: Asan Medical Center (gastroenterology), Prime Heart &amp; Lung, Hamdan Bin Rashid Cancer Hospital. Medical workforce needs quality housing within 5–10 min commute — Al Jaddaf is the closest liveable address.</div></div>
+      <div class="driver-item"><div class="driver-num">02</div><div class="driver-text"><strong>Urban Tech District — 4,000 high-tech jobs coming to Al Jaddaf Creekside</strong> — world's largest urban tech district, 140,000 sqm, net-zero carbon. Sectors: green urban tech, AI, applied research, venture capital. Completion 2030 in two phases. Tech professionals arriving progressively from 2026.</div></div>
+      <div class="driver-item"><div class="driver-num">03</div><div class="driver-text"><strong>Al Jaddaf Metro</strong> (Green Line) — direct connection to Union, DIFC, and full metro network. Commuters + medical staff = diverse, captive tenant pool. No car needed for daily commute.</div></div>
+      <div class="driver-item"><div class="driver-num">04</div><div class="driver-text"><strong>D3 (Dubai Design District) 2 min</strong> — creative, media, fashion and tech companies. Young high-income demographic next door. Al Jaddaf is their nearest quality residential address.</div></div>
+      <div class="driver-item"><div class="driver-num">05</div><div class="driver-text"><strong>Between Old Dubai and Creek Harbour</strong> — Al Jaddaf sits in the appreciation corridor between established Downtown and Emaar's massive Creek Harbour development. Land locked, values anchored both sides.</div></div>
+      <div class="driver-item"><div class="driver-num">06</div><div class="driver-text"><strong>Binghatti in a roundabout</strong> — Wraith's 360° exposure inside Al Jaddaf roundabout means no future building can block it. Permanent landmark status in an area gaining 7,000+ high-income workers by 2030.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- JVC -->
+<div class="location-section" id="loc-jvc">
+  <div class="location-card">
+    <div class="location-title">🏘️ JVC — Jumeirah Village Circle
+      <span style="font-size:12px;font-weight:400;color:var(--muted)">— Dubai's highest-volume rental community</span>
+    </div>
+    <div class="location-projects">
+      <span class="loc-tag">Etherea</span>
+      <span class="loc-tag">Amberhall</span>
+    </div>
+    <div class="drivers">
+      <div class="driver-item"><div class="driver-num">01</div><div class="driver-text"><strong>Highest rental yields</strong> in Dubai — typically 7–9% gross. Investors' first choice for yield-focused purchases.</div></div>
+      <div class="driver-item"><div class="driver-num">02</div><div class="driver-text"><strong>100,000+ residents</strong> — established, liquid community. Resale is easy. Rental is easy. No vacancy risk.</div></div>
+      <div class="driver-item"><div class="driver-num">03</div><div class="driver-text"><strong>Circle Mall, GEMS, JSS</strong> — school, retail and healthcare all walkable. Strong family and long-term tenant demand.</div></div>
+      <div class="driver-item"><div class="driver-num">04</div><div class="driver-text"><strong>Al Khail Road + E311</strong> — fast links to Marina, Downtown, DIFC and both airports. Attractive for professionals who commute.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- JVT -->
+<div class="location-section" id="loc-jvt">
+  <div class="location-card">
+    <div class="location-title">🌳 JVT — Jumeirah Village Triangle
+      <span style="font-size:12px;font-weight:400;color:var(--muted)">— Quieter, greener, lower density than JVC</span>
+    </div>
+    <div class="location-projects">
+      <span class="loc-tag">Luxuria</span>
+      <span class="loc-tag">Flare 02</span>
+    </div>
+    <div class="drivers">
+      <div class="driver-item"><div class="driver-num">01</div><div class="driver-text"><strong>Villa-community feel</strong> at apartment price. Lower density than JVC — more space, more green. Attracts families and upgraders.</div></div>
+      <div class="driver-item"><div class="driver-num">02</div><div class="driver-text"><strong>Limited new supply</strong> — fewer towers than JVC means less rental competition. New Binghatti stock commands a premium.</div></div>
+      <div class="driver-item"><div class="driver-num">03</div><div class="driver-text"><strong>Sheikh Mohammed Bin Zayed Road</strong> — Dubai Marina 10 min, MOE 18 min, Downtown 25 min. Strong connectivity without city-centre pricing.</div></div>
+      <div class="driver-item"><div class="driver-num">04</div><div class="driver-text"><strong>Nakheel Mall JVT</strong> walkable. Schools and parks within the community. Quiet, liveable — strong for end-users.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MOTOR CITY -->
+<div class="location-section" id="loc-mc">
+  <div class="location-card">
+    <div class="location-title">🏎️ Motor City
+      <span style="font-size:12px;font-weight:400;color:var(--muted)">— Mature, supply-constrained, professional community</span>
+    </div>
+    <div class="location-projects">
+      <span class="loc-tag">Sky Terraces</span>
+    </div>
+    <div class="drivers">
+      <div class="driver-item"><div class="driver-num">01</div><div class="driver-text"><strong>Gold Line metro coming 2032 — Motor City's FIRST EVER metro access</strong> — confirmed on HH Sheikh Mohammed's AED 34B Gold Line (announced 22 Apr 2026, opens 9/9/2032). Motor City and Dubai Production City on the confirmed route. Currently zero metro connectivity = today's price is pre-connectivity. Buy now, rent improves 2027, values reprice when the line opens 2032.</div></div>
+      <div class="driver-item"><div class="driver-num">02</div><div class="driver-text"><strong>Dubai Science Park — 6,500+ professionals, 350+ companies</strong> — within Motor City. TECOM Group free zone: pharma, biotech, life sciences, energy R&D. 400,000 sqft expansion planned. These workers need to live nearby; Motor City is the community of choice. Rental yields 6–8% confirm captive demand.</div></div>
+      <div class="driver-item"><div class="driver-num">03</div><div class="driver-text"><strong>Dubai Production City adjacent</strong> — media, print, publishing free zone. Companies: Reuters, Al Arabiya, OSN, etc. Media professionals next door = additional rental demand pool.</div></div>
+      <div class="driver-item"><div class="driver-num">04</div><div class="driver-text"><strong>Established built-out community</strong> — Motor City has no more land for new towers. Sky Terraces (Binghatti) is the first new tower in years. GEMS Metropole school, First Avenue Mall, Mediclinic Parkview, Dubai Autodrome all in place. No "wait for amenities" risk.</div></div>
+      <div class="driver-item"><div class="driver-num">05</div><div class="driver-text"><strong>6–8% gross rental yields</strong> (apartments, 2025 data) — family professionals + science park workers = consistent occupancy. Low vacancy risk in mature communities like Motor City.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAJAN -->
+<div class="location-section" id="loc-majan">
+  <div class="location-card">
+    <div class="location-title">🎡 Majan
+      <span style="font-size:12px;font-weight:400;color:var(--muted)">— Affordable growth zone, entertainment hub adjacency</span>
+    </div>
+    <div class="location-projects">
+      <span class="loc-tag">Skyflame 1</span>
+      <span class="loc-tag">Skyflame 2</span>
+    </div>
+    <div class="drivers">
+      <div class="driver-item"><div class="driver-num">01</div><div class="driver-text"><strong>Global Village</strong> (5 min) — 6-month season, millions of visitors. Tourism and hospitality workers nearby need quality housing.</div></div>
+      <div class="driver-item"><div class="driver-num">02</div><div class="driver-text"><strong>IMG Worlds of Adventure</strong> (5 min) — world's largest indoor theme park. Permanent employment hub with large workforce.</div></div>
+      <div class="driver-item"><div class="driver-num">03</div><div class="driver-text"><strong>SMBZ corridor</strong> — Downtown 15 min, DXB 20 min, DWC 20 min. Dual-airport access for frequent flyers and expats.</div></div>
+      <div class="driver-item"><div class="driver-num">04</div><div class="driver-text"><strong>Studio from 699,999</strong> — lowest entry point in Binghatti portfolio. Best value per sqft play. Strong for first-time buyers and small investors.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ARJAN -->
+<div class="location-section" id="loc-arjan">
+  <div class="location-card">
+    <div class="location-title">🌸 Arjan
+      <span style="font-size:12px;font-weight:400;color:var(--muted)">— Science, healthcare and lifestyle cluster</span>
+    </div>
+    <div class="location-projects">
+      <span class="loc-tag">Hillcrest</span>
+    </div>
+    <div class="drivers">
+      <div class="driver-item"><div class="driver-num">01</div><div class="driver-text"><strong>Dubai Miracle Garden adjacent</strong> — world's largest natural flower garden. Tourism draw and lifestyle prestige for the area.</div></div>
+      <div class="driver-item"><div class="driver-num">02</div><div class="driver-text"><strong>Dubai Science Park</strong> — pharmaceutical, biotech, R&D companies. Skilled, well-paid professional tenant base.</div></div>
+      <div class="driver-item"><div class="driver-num">03</div><div class="driver-text"><strong>Healthcare cluster</strong> — multiple hospitals and clinics in the immediate area. Medical professionals seeking nearby accommodation.</div></div>
+      <div class="driver-item"><div class="driver-num">04</div><div class="driver-text"><strong>Dec 2026 handover</strong> — nearest delivery in the entire portfolio. For clients who want in quickly without a long wait.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- AL ROWAIYAH / ACADEMIC CITY -->
+<div class="location-section" id="loc-academic">
+  <div class="location-card">
+    <div class="location-title">🎓 Al Rowaiyah — Academic City
+      <span style="font-size:12px;font-weight:400;color:var(--muted)">— Knowledge district, government-backed growth</span>
+    </div>
+    <div class="location-projects">
+      <span class="loc-tag">Tilal</span>
+    </div>
+    <div class="drivers">
+      <div class="driver-item"><div class="driver-num">01</div><div class="driver-text"><strong>District IO — 70,000 jobs, AED 12.8B HH announcement</strong> — launched by HH Sheikh Mohammed bin Rashid, January 2026. Dubai Silicon Oasis (adjacent to Academic City) expanded with District IO: 25 buildings, 6,500+ global companies, 70,000 direct &amp; indirect jobs over 10 years. Sectors: AI, Robotics, Web3, Quantum Computing, Smart Mobility, 3D Printing. Phase 1 starts 2026. Expected AED 103B GDP contribution + AED 30B FDI by 2036. DSO already hosts 60,000+ talents today.</div></div>
+      <div class="driver-item"><div class="driver-num">02</div><div class="driver-text"><strong>Blue Line Metro — Dubai Silicon Oasis &amp; Academic City on route</strong> — under construction (10% complete Nov 2025), targeting 30% by end of 2026, opens 9/9/2029. First metro access ever for this corridor. Property values in metro-adjacent areas historically reprice 15–25% on delivery.</div></div>
+      <div class="driver-item"><div class="driver-num">03</div><div class="driver-text"><strong>Academic City 15% student growth in 2025</strong> — student body exceeded 38,500 by end of 2024-25 academic year (Dubai Media Office, Jan 2026). 27+ universities. Faculty, staff, and international students all need quality housing — supply is severely limited at this price tier.</div></div>
+      <div class="driver-item"><div class="driver-num">04</div><div class="driver-text"><strong>E611 + E66 access</strong> — Emirates Road and Al Ain Road. Meydan 12 min, Creek Harbour 15 min, Downtown 18 min, both airports under 20 min. Now + Blue Line coming = dual connectivity premium.</div></div>
+      <div class="driver-item"><div class="driver-num">05</div><div class="driver-text"><strong>Currently undervalued vs. every comparable</strong> — buying pre-District IO, pre-metro. The same thesis that made DSO and Academic City grow is now being supercharged with AED 12.8B in government investment and the metro line.</div></div>
+      <div class="driver-item"><div class="driver-num">06</div><div class="driver-text"><strong>Tilal Binghatti villa lifestyle from AED 4.2M</strong> — 621,815 sqm masterplan, pearl beach, wave system, 4 clusters. Nothing at this price point with this specification in any established Dubai community. Buyers who delay will pay 20–30% more post-metro.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- IMPZ -->
+<div class="location-section" id="loc-impz">
+  <div class="location-card">
+    <div class="location-title">📺 IMPZ — International Media Production Zone
+      <span style="font-size:12px;font-weight:400;color:var(--muted)">— Free zone media cluster, Motor City adjacent</span>
+    </div>
+    <div class="location-projects">
+      <span class="loc-tag">Elite</span>
+    </div>
+    <div class="drivers">
+      <div class="driver-item"><div class="driver-num">01</div><div class="driver-text"><strong>Designated free zone</strong> for media, print, and production companies. Captive professional tenant base working in-zone.</div></div>
+      <div class="driver-item"><div class="driver-num">02</div><div class="driver-text"><strong>Affordable pricing</strong> vs. JVC, JVT, and Downtown. Value play for investors seeking yield in a niche but stable tenant market.</div></div>
+      <div class="driver-item"><div class="driver-num">03</div><div class="driver-text"><strong>Motor City adjacent</strong> — lifestyle amenities (Autodrome, Mall, schools) just minutes away without the Motor City price premium.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Commission Reference -->
+<div class="section-title">💼 Commission Reference — Full Portfolio</div>
+<table class="summary-table">
+  <thead>
+    <tr><th>Commission Rate</th><th>Projects</th><th>Note</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="comm-high">7% / 7% cash</td><td>Burj Jacob & Co · Bugatti Residences</td><td>Hyper luxury branded — highest in portfolio</td></tr>
+    <tr><td class="comm-high">6% std / 7% cash</td><td>Aquarise · Amberhall · Sky Rise</td><td>Premium incentive — push these for cash buyers</td></tr>
+    <tr><td>5% / 6% (3+ or cash)</td><td>Mercedes-Benz City (all 3 towers) · Skyflame · Etherea · Ghost · Cullinan · Moonlight · Wraith · Flare 02 · Pinnacle</td><td>6% unlocked for 3+ units same month or full cash</td></tr>
+    <tr><td>5% std</td><td>Vision Iconic · Hillcrest · Tilal (villa std)</td><td>Standard — no cash uplift confirmed</td></tr>
+    <tr><td>5% / 5%</td><td>Elite (IMPZ)</td><td>No cash premium — same rate regardless</td></tr>
+    <tr><td>⚠️ TBC</td><td>Sky Terraces · Luxuria</td><td>Not confirmed in provided data</td></tr>
+  </tbody>
+</table>
+
+<div style="margin-top:32px;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.8">
+  <strong style="color:var(--text)">⚠️ Data integrity notes:</strong><br>
+  · Vision Iconic: unit mix, pricing, total inventory and structure not provided — obtain from Binghatti team before pitching<br>
+  · Flare 01 &amp; Twilight: location and completion date unknown — obtain from Binghatti team<br>
+  · Wraith, Ghost, Cullinan, Moonlight, Pinnacle, Sky Rise, Amberhall, Elite: unit mix and exact pricing not provided<br>
+  · Burj Jacob &amp; Co and Bugatti: detailed specs not provided — hyper-luxury products require bespoke knowledge<br>
+  · Hillcrest: 50/50 plan for Studio/1BR expired Oct 2025 — confirm current plan terms<br>
+  · Sky Terraces and Luxuria: commission rate not confirmed<br>
+  · All prices from Excel are sqft (not sqm) — confirm with clients to avoid confusion<br>
+  · Worker/population projection claims for specific areas: verify exact figures with official Dubai government sources before using with clients<br>
+  <br>
+  <strong style="color:var(--text)">Compiled:</strong> 02 Jul 2026 · Source: Binghatti broker hub + project fact sheets provided
+</div>
+
+</div><!-- /page -->
+
+<script>
+// ── Synonym / alias map ─────────────────────────────
+const SYNONYMS = {
+  '1 bed':        ['1br','1 bed','1 bedroom','1 bedroom'],
+  '2 bed':        ['2br','2 bed','2 bedroom'],
+  '3 bed':        ['3br','3 bed','3 bedroom'],
+  '4 bed':        ['4br','4 bed','4 bedroom','4br townhouse','4br villa'],
+  '5 bed':        ['5br','5 bed','5 bedroom','5br townhouse'],
+  '6 bed':        ['6br','6 bed','6 bedroom','6br villa'],
+  '7 bed':        ['7br','7 bed','7 bedroom','7br villa'],
+  '4br':          ['4br','4 bed','4 bedroom'],
+  '5br':          ['5br','5 bed','5 bedroom'],
+  '6br':          ['6br','6 bed','6 bedroom'],
+  '7br':          ['7br','7 bed','7 bedroom'],
+  'commercial':   ['retail','office','commercial'],
+  'office':       ['office','commercial'],
+  'retail':       ['retail','commercial'],
+  'bb':           ['business bay'],
+  'downtown':     ['business bay','downtown','difc','mercedes-benz places','mbp downtown'],
+  'difc':         ['business bay','difc','downtown','mercedes-benz places'],
+  'jvc':          ['jvc','jumeirah village circle','etherea','amberhall'],
+  'jvt':          ['jvt','jumeirah village triangle','luxuria','flare 02'],
+  'studio':       ['studio'],
+  'th':           ['townhouse'],
+  'villa':        ['villa','villas'],
+  'townhouse':    ['townhouse','th/villas'],
+  'ready':        ['ready','✅'],
+  'pool':         ['pool','2br + pool','pool unit'],
+  'mansion':      ['mansion'],
+  'academic city':['academic city','al rowaiyah','tilal'],
+  'motor city':   ['motor city','sky terraces'],
+  'majan':        ['majan','skyflame'],
+  'arjan':        ['arjan','hillcrest'],
+  'impz':         ['impz','elite'],
+  'mercedes':     ['mercedes','maybach'],
+  'hyper luxury': ['hyper luxury','bugatti','jacob'],
+};
+
+function expandTerms(raw) {
+  const terms = new Set([raw]);
+  for (const [key, expansions] of Object.entries(SYNONYMS)) {
+    if (raw.includes(key)) expansions.forEach(e => terms.add(e));
+  }
+  return [...terms];
+}
+
+function matches(el, terms) {
+  const text = el.textContent.toLowerCase();
+  return terms.some(t => text.includes(t));
+}
+
+function runSearch() {
+  const raw   = document.getElementById('globalSearch').value.trim().toLowerCase();
+  const clr   = document.getElementById('searchClear');
+  const res   = document.getElementById('searchResults');
+  const noRes = document.getElementById('noResults');
+
+  clr.classList.toggle('visible', raw.length > 0);
+
+  if (!raw) {
+    showAll();
+    res.innerHTML = '';
+    noRes.style.display = 'none';
+    return;
+  }
+
+  const terms = expandTerms(raw);
+  let tableHits = 0, sectionHits = 0, cardHits = 0, locHits = 0;
+
+  // ── Summary table rows ──
+  document.querySelectorAll('#summaryTable tbody tr').forEach(row => {
+    const show = matches(row, terms);
+    row.style.display = show ? '' : 'none';
+    if (show) tableHits++;
+  });
+
+  // ── Project sections ──
+  document.querySelectorAll('.project-section').forEach(sec => {
+    const show = matches(sec, terms);
+    sec.style.display = show ? '' : 'none';
+    if (show) sectionHits++;
+  });
+
+  // ── Section title banners — hide if no children visible ──
+  document.querySelectorAll('.section-title').forEach(title => {
+    let sib = title.nextElementSibling;
+    let anyVis = false;
+    while (sib && !sib.classList.contains('section-title')) {
+      if ((sib.classList.contains('project-section') || sib.classList.contains('quick-grid')) && sib.style.display !== 'none') anyVis = true;
+      sib = sib.nextElementSibling;
+    }
+    title.style.display = anyVis ? '' : 'none';
+  });
+
+  // ── Quick reference cards ──
+  let anyCard = false;
+  document.querySelectorAll('.quick-card').forEach(card => {
+    const show = matches(card, terms);
+    card.style.display = show ? '' : 'none';
+    if (show) { anyCard = true; cardHits++; }
+  });
+  const qg = document.querySelector('.quick-grid');
+  if (qg) qg.style.display = anyCard ? '' : 'none';
+
+  // ── Location sections ──
+  document.querySelectorAll('.location-section').forEach(sec => {
+    const show = matches(sec, terms);
+    sec.style.display = show ? '' : 'none';
+    if (show) locHits++;
+  });
+
+  const totalHits = tableHits + sectionHits + cardHits + locHits;
+  noRes.style.display = totalHits === 0 ? '' : 'none';
+
+  const parts = [];
+  if (tableHits)   parts.push(`<strong>${tableHits}</strong> project${tableHits!==1?'s':''} in table`);
+  if (sectionHits) parts.push(`<strong>${sectionHits}</strong> detail card${sectionHits!==1?'s':''}`);
+  if (cardHits)    parts.push(`<strong>${cardHits}</strong> quick ref`);
+  if (locHits)     parts.push(`<strong>${locHits}</strong> location${locHits!==1?'s':''}`);
+  res.innerHTML = totalHits > 0 ? `Showing: ${parts.join(' · ')} for <strong>"${raw}"</strong>` : '';
+}
+
+function showAll() {
+  document.querySelectorAll('#summaryTable tbody tr').forEach(r => r.style.display = '');
+  document.querySelectorAll('.project-section, .location-section, .section-title, .quick-grid').forEach(s => s.style.display = '');
+  document.querySelectorAll('.quick-card').forEach(c => c.style.display = '');
+}
+
+function setSearch(val) {
+  document.getElementById('globalSearch').value = val;
+  runSearch();
+  document.getElementById('globalSearch').focus();
+}
+
+function clearSearch() {
+  document.getElementById('globalSearch').value = '';
+  runSearch();
+}
+
+document.getElementById('globalSearch').addEventListener('input', runSearch);
+document.getElementById('globalSearch').addEventListener('keydown', e => {
+  if (e.key === 'Escape') clearSearch();
+});
+
+// ── Table sorting ───────────────────────────────────
+const MONTHS = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+
+function parseCompletion(s) {
+  const t = (s || '').toLowerCase().trim();
+  if (!t || t.includes('ready') || t.includes('✅')) return 0;
+  const q = t.match(/q([1-4])\s*(\d{4})/);
+  if (q) return parseInt(q[2]) * 100 + [1,4,7,10][parseInt(q[1])-1];
+  const m = t.match(/([a-z]+)\s*(\d{4})/);
+  if (m) return parseInt(m[2]) * 100 + (MONTHS[m[1].slice(0,3)] || 0);
+  return 999999;
+}
+
+function parseNum(s) {
+  return parseFloat((s || '').replace(/[^0-9.]/g, '')) || 0;
+}
+
+let _sortCol = -1, _sortAsc = true;
+
+function sortTable(col, type) {
+  const tbody = document.querySelector('#summaryTable tbody');
+  const rows  = [...tbody.querySelectorAll('tr')];
+  _sortAsc = _sortCol === col ? !_sortAsc : true;
+  _sortCol = col;
+
+  rows.sort((a, b) => {
+    const av = a.cells[col]?.textContent.trim() || '';
+    const bv = b.cells[col]?.textContent.trim() || '';
+    let cmp = 0;
+    if (type === 'num')  cmp = parseNum(av) - parseNum(bv);
+    else if (type === 'date') cmp = parseCompletion(av) - parseCompletion(bv);
+    else cmp = av.localeCompare(bv);
+    return _sortAsc ? cmp : -cmp;
+  });
+
+  rows.forEach(r => tbody.appendChild(r));
+
+  document.querySelectorAll('#summaryTable th[data-col]').forEach(th => {
+    th.classList.remove('sort-asc', 'sort-desc');
+    if (parseInt(th.dataset.col) === col)
+      th.classList.add(_sortAsc ? 'sort-asc' : 'sort-desc');
+  });
+}
+
+/* ── Per-card section tabs (auto-generated) ────────────────────────────── */
+function _tabLabel(h4text) {
+  const t = (h4text || '').toLowerCase();
+  if (t.includes('unit mix') || t.includes('floor plan')) return 'Sizes';
+  if (t.includes('standard unit')) return 'Std Sizes';
+  if (t.includes('vision iconic')) return 'V.Iconic';
+  if (t.includes('pric') || t.includes('indicative')) return 'Pricing';
+  if (t.includes('fast fact') || t.includes('building fact')) return 'Facts';
+  if (t.includes('amenit')) return 'Amenities';
+  if (t.includes('pitch')) return 'Pitch';
+  if (t.includes('material') || t.includes('palette')) return 'Materials';
+  if (t.includes('location') || t.includes('drive time')) return 'Location';
+  if (t.includes('mercedes') || t.includes('brand')) return 'MB Brand';
+  if (t.includes('12-tower') || t.includes('complete') || t.includes('masterplan') || t.includes('directory')) return 'Towers';
+  if (t.includes('cluster') || t.includes('communit')) return 'Clusters';
+  if (t.includes('villa') && t.includes('spec')) return 'Villa Specs';
+  if (t.includes('interior') || t.includes('finish')) return 'Finishes';
+  if (t.includes('payment') || t.includes('commission')) return 'Payment';
+  if (t.includes('water')) return 'Water';
+  if (t.includes('suite') || t.includes('penthouse')) return 'Suites';
+  return (h4text || '').split(' ').slice(0, 2).join(' ') || 'More';
+}
+
+function _syncCardPanels(card) {
+  const body = card.querySelector('.card-body');
+  const activeTabs = [...card.querySelectorAll('.card-tab:not([data-all]).active')];
+  const allBtn = card.querySelector('.card-tab[data-all]');
+  if (activeTabs.length === 0) {
+    // Nothing selected → revert to All
+    allBtn && allBtn.classList.add('active');
+    body.classList.remove('tab-filtered');
+    [...body.children].forEach(p => p.classList.remove('tab-hidden'));
+  } else {
+    allBtn && allBtn.classList.remove('active');
+    const selected = new Set(activeTabs.map(t => t.dataset.tabSection));
+    body.classList.add('tab-filtered');
+    [...body.children].forEach(p => {
+      p.classList.toggle('tab-hidden', !selected.has(p.dataset.cardSection));
+    });
+  }
+}
+
+function _activateCardTab(tabEl, card) {
+  if (tabEl.dataset.all) {
+    // All button: clear all individual selections
+    card.querySelectorAll('.card-tab:not([data-all])').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+    const body = card.querySelector('.card-body');
+    body.classList.remove('tab-filtered');
+    [...body.children].forEach(p => p.classList.remove('tab-hidden'));
+  } else {
+    // Toggle individual tab (multi-select)
+    tabEl.classList.toggle('active');
+    _syncCardPanels(card);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.project-card').forEach(card => {
+    const body = card.querySelector('.card-body');
+    if (!body) return;
+    const panels = [...body.children];
+    if (panels.length <= 1) return;
+
+    const tabBar = document.createElement('div');
+    tabBar.className = 'card-tabs';
+
+    const allBtn = document.createElement('button');
+    allBtn.className = 'card-tab active';
+    allBtn.dataset.all = '1';
+    allBtn.textContent = 'All';
+    allBtn.onclick = () => _activateCardTab(allBtn, card);
+    tabBar.appendChild(allBtn);
+
+    const usedLabels = {};
+    panels.forEach((panel) => {
+      const h4 = panel.querySelector('h4');
+      let label = _tabLabel(h4 ? h4.textContent.trim() : '');
+      if (usedLabels[label]) { usedLabels[label]++; label += ' ' + usedLabels[label]; }
+      else usedLabels[label] = 1;
+      panel.dataset.cardSection = label;
+
+      const btn = document.createElement('button');
+      btn.className = 'card-tab';
+      btn.dataset.tabSection = label;
+      btn.textContent = label;
+      btn.onclick = () => _activateCardTab(btn, card);
+      tabBar.appendChild(btn);
+    });
+
+    body.parentNode.insertBefore(tabBar, body);
+  });
+});
+
+// Floating back-to-table button
+(function(){
+  const btn = document.createElement('button');
+  btn.id = 'back-to-table';
+  btn.textContent = '↑ Table';
+  btn.title = 'Back to summary table';
+  btn.onclick = () => document.getElementById('summary').scrollIntoView({behavior:'smooth'});
+  document.body.appendChild(btn);
+  const sentinel = document.getElementById('summary');
+  window.addEventListener('scroll', () => {
+    if (!sentinel) return;
+    btn.classList.toggle('visible', sentinel.getBoundingClientRect().bottom < 0);
+  }, {passive:true});
+})();
+</script>
+
+</body>
+</html>
